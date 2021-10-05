@@ -1,90 +1,173 @@
 <?php
 class ControllerOrders{
 
-    static public function ctrCreateOrder($data,$pedido){
+    static public function ctrCreateOrder($data){
+
+        //BUSCAR CORRELATIVO
+
+        $pedido = ModelsOrders::mdlConsecutivoProximo();
 
         if(isset($data["client"]["cli_des"])){
 
             $datos = array(
-                "fact_num" =>$pedido,
-                "status"=>0,
-                "descrip"=>"Pedido generado desde la App movil",
-                "saldo" =>(($data["total_neto"]*16)/100)+$data["total_neto"],
-                "co_cli"=>$data["client"]["co_cli"],
-                "co_ven"=>$data["co_ven"],
-                "co_tran"=>$data["transporte"],
-                "forma_pag"=>$data["formaPago"],
-                "tot_bruto"=>$data["total_neto"],
-                "tot_neto" =>(($data["total_neto"]*16)/100)+$data["total_neto"],
-                "iva"=>($data["total_neto"]*16)/100,
-                "tasa"=>16,
-                "moneda"=>"BS.S",
-                "co_sucu"=>$data["sucursal"],
-                "tasag"=>16,
-                "tasag10"=>8,
-                "tasag20"=>10
+                "sdFec_Emis"=>date("Y-m-d H:i:s"),
+                "sDoc_Num"=>$pedido["Codigo"]+1,
+                "sDescrip"=>'Pedido generado desde la App movil',
+                "sCo_Cli"=>$data["client"]["co_cli"],
+                "sCo_Tran"=>$data["transporte"],
+                "sCo_Cond"=>$data["formaPago"],
+                "sCo_Ven"=>$data["co_ven"],
+                "sCo_Cta_Ingr_Egr"=>"NULL",
+                "sCo_Mone"=>'BSF',
+                "bAnulado"=>0,
+                "sdFec_Reg"=>date("Y-m-d H:i:s"),
+                "sdFec_Venc"=>date("Y-m-d H:i:s"),
+                "sStatus"=>'0',
+                "deTasa"=>1,
+                "sN_Control"=>"NULL",
+                "sPorc_Desc_Glob"=>"NULL",
+                "deMonto_Desc_Glob"=>0,
+                "sPorc_Reca"=>"NULL",
+                "deMonto_Reca"=>0,
+                "deSaldo"=>(($data["total_neto"]*16)/100)+$data["total_neto"],
+                "deTotal_Bruto"=>$data["total_neto"],
+                "deMonto_Imp"=>($data["total_neto"]*16)/100,
+                "deMonto_Imp3"=>0,
+                "deOtros1"=>0,
+                "deOtros2"=>0,
+                "deOtros3"=>0,
+                "deMonto_Imp2"=>0,
+                "deTotal_Neto"=>(($data["total_neto"]*16)/100)+$data["total_neto"],
+                "sComentario"=>"NULL",
+                "sDir_Ent"=>"NULL",
+                "bContrib"=>1,
+                "bImpresa"=>0,
+                "sSalestax"=>"NULL",
+                "sImpfis"=>"NULL",
+                "sImpfisfac"=>"NULL",
+                "bVen_Ter"=>0,
+                "sDis_Cen"=>"NULL",
+                "sCampo1"=>"NULL",
+                "sCampo2"=>"NULL",
+                "sCampo3"=>"NULL",
+                "sCampo4"=>"NULL",
+                "sCampo5"=>"NULL",
+                "sCampo6"=>"NULL",
+                "sCampo7"=>"NULL",
+                "sCampo8"=>"NULL",
+                "sRevisado"=>"NULL",
+                "sTrasnfe"=>"NULL",
+                "sco_sucu_in"=>$data["sucursal"],
+                "sco_us_in"=>'',
+                "sMaquina"=>'appMovil'
+
             );
 
 
-            $resultado = ModelsOrders::mdlCreateClientOrder("pedidos_app",$data,$pedido);
+
+            $resultado = ModelsOrders::mdlCreateClientOrder("saPedidoVentaApp",$data,$pedido["Codigo"]+1);
 
             //armar el array para insertar el encabezado
 
-            $resultadoProfit= ModelsOrders::mdlInsertarEncabezadoProfit("pedidos",$datos);
+            $resultadoProfit= ModelsOrders::mdlInsertarEncabezadoProfit($datos);
 
 
             if($resultado=="ok" && $resultadoProfit=="ok"){
 
                 foreach ($data["products"] as $key => $value) {
-                    //BUSCO LA UNIDAD DE RELACION PARA PODER SACAR EL CALCULO DE LA CANTIDAD Y EL MONTO
 
-                    $datosProducto = ModelProducts::mdlShowProduct("art",$value["co_art"]);
+
+                    //BUSCO LA UNIDAD DEL PRODUCTO
+                    $unidaItem = ModelProducts::mdlConsultarUnidadArticulo("co_art",$value["co_art"]);
+
+                    //se arma el array de los renglones
+
+                    $pedidoRenglon = array(
+                        "sDoc_Num"=>$pedido["Codigo"]+1,
+                        "sCo_Art"=>$value["co_art"],
+                        "sDes_Art"=>"NULL",
+                        "sCo_Uni"=>$unidaItem["co_uni"],
+                        "sSco_Uni"=>"NULL",
+                        "sCo_Alma"=>$data["co_alma"],
+                        "sCo_Precio"=>$data["client"]["tipo_precio"],
+                        "sTipo_Imp"=>"1",
+                        "sTipo_Imp2"=>"NULL",
+                        "sTipo_Imp3"=>"NULL",
+                        "deTotal_Art"=>$value["quantity"],
+                        "deStotal_Art"=>0,
+                        "dePrec_Vta"=>$value["price"],
+                        "sPorc_Desc"=>"NULL",
+                        "deMonto_Desc"=>0,
+                        "dePorc_Imp"=>16.00000,
+                        "dePorc_Imp2"=>0,
+                        "dePorc_Imp3"=>0,
+                        "deReng_Neto"=>$value["price"] * $value["quantity"],
+                        "dePendiente"=>$value["quantity"],
+                        "dePendiente2"=>0,
+                        "sTipo_Doc"=>"NULL",
+                        "gRowguid_Doc"=>"NULL",
+                        "sNum_Doc"=>"NULL",
+                        "deMonto_Imp"=>((($value["price"] * $value["quantity"])*16)/100)+($value["price"] * $value["quantity"]),
+                        "deTotal_Dev"=>0,
+                        "deMonto_Dev"=>0,
+                        "deOtros"=>0,
+                        "deMonto_Imp2"=>0,
+                        "deMonto_Imp3"=>0,
+                        "sComentario"=>"NULL",
+                        "sDis_Cen"=>"NULL",
+                        "deMonto_Desc_Glob"=>0,
+                        "deMonto_Reca_Glob"=>0,
+                        "deOtros1_Glob"=>0,
+                        "deOtros2_glob"=>0,
+                        "deOtros3_glob"=>0,
+                        "deMonto_imp_afec_glob"=>0,
+                        "deMonto_imp2_afec_glob"=>0,
+                        "deMonto_imp3_afec_glob"=>0,
+                        "iRENG_NUM"=>$key+1,
+                        "sREVISADO"=>"NULL",
+                        "sTRASNFE"=>"NULL",
+                        "sco_sucu_in"=>$data["sucursal"],
+                        "sco_us_in"=>"",
+                        "sMaquina"=>"appMovil"
+                    );
 
                     $response = array(
                         "reng_doc" => $key+1,
-                        "fact_num" => $pedido,
+                        "fact_num" => $pedido["Codigo"]+1,
                         "co_art" => $value["co_art"],
-                        "total_art"=>(trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] ),
+                        "total_art"=>$value["quantity"],
                         "prec_vta" =>$value["price"],
                         "art_des" =>$value["art_des"],
-                        "total"=>$value["price"]*(trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] ),
+                        "total"=>$value["price"] * $value["quantity"],
                         "descuento"=>$value["discount"],
                         "stock_prev"=>$value["stock_act"],
-                        "stock_act"=>$value["stock_act"]-(trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] )
+                        "stock_act"=>$value["stock_act"]- $value["quantity"]
 
                     );
-                    ModelsOrders::mdlCreateProduct("reng_pedapp",$response);
+                    $respuesta2= ModelsOrders::mdlCreateProduct("saPedidoVentaRengApp",$response);
 
-                    //manejo de multiples unidades, busco la unidad de venta principal CAJA, UNIDAD uni_emp, tuni_venta
-
-                    $unidadArt = ModelProducts::mdlFindUnidadMultiple($value["co_art"]);
-
-                    $response2 = array(
-                        "fact_num"=>$pedido,
-                        "reng_num"=>$key+1,
-                        "tipo_doc"=>'',
-                        "co_art" =>$value["co_art"],
-                        "co_alma"=>$data["co_alma"],
-                        "total_art"=> (trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] ),
-                        "stotal_art"=>1,
-                        "pendiente"=>(trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] ),
-                        "uni_venta"=>$unidadArt["unidad"],
-                        "prec_vta"=>$value["price"],
-                        "tipo_imp"=>1,
-                        "reng_neto"=>$value["price"]*(trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] ),
-                        "cant_imp"=>0,
-                        "total_uni"=>$value["stock_act"]-(trim($datosProducto["uni_venta"]) == "UND" ? $value["quantity"] * $datosProducto["uni_relac"] : $value["quantity"] )
-                    );
-
-                    $respuesta =ModelsOrders::mdlInsertarRenglonPedido("reng_ped",$response2);
+                    $respuesta =ModelsOrders::mdlInsertarRenglonPedido($pedidoRenglon);
 
                     if($respuesta=="ok"){
 
-                        //hacer los movimientos en el almacen ST_ALMA
+                        /*==================================================
+                        REALIZO LOS MOVIMIENTOS EN INVENTARIO
+                        ====================================================*/
 
-                        ModelProducts::mdlUpdateStAlma("st_almac",$response2);
+                        $respo = array(
+                            "sCo_Alma"=>$data["co_alma"],
+                            "sCo_Art"=>$value["co_art"],
+                            "sCo_Uni"=>$unidaItem["co_uni"],
+                            "deCantidad"=>$value["quantity"],
+                            "sTipoStock"=>'COM',
+                            "bSumarStock"=>1,
+                            "bPermiteStockNegativo"=>0
+                        );
 
-                        ModelProducts::mdlUpdateArt("art",$response2);
+
+
+                       ModelProducts::mdlActualizarStock($respo);
+
 
                     }
 
@@ -95,7 +178,8 @@ class ControllerOrders{
                         "error" => false,
                         "statusCode"=>200,
                         "renglones"=>$respuesta,
-                        "mensaje" =>"Se genero el pedido # ".$pedido
+                        "mensaje" =>"Se genero el pedido # ".$pedido["Codigo"] + 1,
+
                     ));
 
             }else{
@@ -227,6 +311,23 @@ class ControllerOrders{
 
         );
 
+    }
+
+    static public function ctrProbarStored($data){
+
+        $respuesta = ModelsOrders::mdlConsecutivoProximo();
+
+       // $respuesta = ModelsOrders::mdlProbarStored();
+
+
+        echo json_encode(
+            array(
+                "error" => false,
+                "statusCode"=>200,
+                "resultado" =>rtrim($respuesta["Codigo"])
+            )
+
+        );
     }
 
 

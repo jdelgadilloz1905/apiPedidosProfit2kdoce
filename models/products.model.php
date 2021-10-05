@@ -191,6 +191,7 @@ class ModelProducts{
 	                                                                Au.uni_principal,Au.uso_principal,Au.uni_secundaria,Au.uso_secundaria, u.des_uni AS des_Uni
                                                                 FROM  saArtUnidad AS Au
                                                                     INNER JOIN saUnidad u ON Au.co_uni = u.co_uni
+                                                                    WHERE Au.$item = :$item
                                                                 ORDER BY co_art DESC, uni_principal DESC, uso_principal DESC, uni_secundaria DESC, uso_secundaria DESC");
 
             $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
@@ -340,13 +341,27 @@ class ModelProducts{
         $stmt = null;
     }
 
-    static public function mdlUpdateStAlma($tabla,$datos){
+    static public function mdlActualizarStock($datos){
 
-        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET stock_com = stock_com + :stock_com WHERE co_alma = :co_alma and co_art = :co_art");
+        try {
 
-        $stmt -> bindParam(":stock_com", $datos["total_art"], PDO::PARAM_STR);
-        $stmt -> bindParam(":co_alma", $datos["co_alma"], PDO::PARAM_STR);
-        $stmt -> bindParam(":co_art", $datos["co_art"], PDO::PARAM_STR);
+            $sql = "exec pStockActualizar @sCo_Alma='$datos[sCo_Alma]',@sCo_Art='$datos[sCo_Art]',@sCo_Uni='$datos[sCo_Uni]',@deCantidad=$datos[deCantidad],@sTipoStock='$datos[sTipoStock]',
+                    @bSumarStock=$datos[bSumarStock],@bPermiteStockNegativo=$datos[bPermiteStockNegativo]";
+
+            $stmt = Conexion::conectar()->query($sql);
+
+            return "ok";
+
+            $stmt->close();
+
+            $stmt = null;
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
+
+        }
 
 
         if($stmt -> execute()){

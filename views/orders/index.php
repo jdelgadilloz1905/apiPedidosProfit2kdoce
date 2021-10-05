@@ -13,31 +13,9 @@ switch ($method){
 
     case  "createorder":
 
-        $pedido = ModelsConfig::mdlCorrelativo("par_emp","ped_num");  //la idea es ir a la tabla de correaltivos TOMAR EL UTLIMO CORRELATIVO Y POSTERIORMENTE ACTUALIZIAR
-        //actualizo el correlativo de una vez
-        $actualizado = ModelsConfig::mdlUpdateCorrelativo("par_emp","ped_num",$pedido["ped_num"]);
+        $respuesta = ControllerOrders::ctrCreateOrder($obj);
 
-        if($actualizado == "ok"){
-
-            $respuesta = ControllerOrders::ctrCreateOrder($obj,$pedido["ped_num"]);
-
-            echo $respuesta;
-
-        }else{
-            echo json_encode(
-                array(
-                    "error" => true,
-                    "statusCode"=>400,
-                    "metodo" =>$method,
-                    "variables"=>$obj,
-                    "correlativo"=>$pedido["ped_num"],
-                    "mensaje" =>"Error actualizando correlativo, contacte al administrador"
-                ));
-        }
-        //insertamos el encabezado
-
-
-
+        echo $respuesta;
 
         break;
 
@@ -60,6 +38,14 @@ switch ($method){
     case "datospedido":
 
         $respuesta = ControllerOrders::ctrListOptionPedido($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "prueba":
+
+        $respuesta = ControllerOrders::ctrProbarStored($obj);
 
         echo $respuesta;
 

@@ -162,108 +162,66 @@ class ModelsOrders{
     /*=======================================================
     FUNCIONES QUE TOCAN LA BASE DE DATOS PROFIT DIRECTO
     =========================================================*/
-    static public function mdlInsertarEncabezadoProfit($tabla,$datos){
+    static public function mdlInsertarEncabezadoProfit($datos){
 
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fact_num,status,descrip,saldo,co_cli,co_ven,co_tran,forma_pag,tot_bruto,tot_neto,iva,tasa,moneda,co_sucu,tasag,tasag10,tasag20, fec_emis,fec_venc,feccom) 
-                                                    VALUES (:fact_num, :status, :descrip, :saldo, :co_cli, :co_ven, :co_tran, :forma_pag, :tot_bruto, :tot_neto, :iva,:tasa, :moneda,:co_sucu,:tasag,:tasag10,:tasag20, SYSDATETIME(),SYSDATETIME(),SYSDATETIME())");
-
-        $stmt->bindParam(":fact_num", $datos["fact_num"], PDO::PARAM_INT);
-
-        $stmt->bindParam(":status", $datos["status"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":descrip", $datos["descrip"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":saldo", $datos["saldo"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":co_cli", $datos["co_cli"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":co_ven", $datos["co_ven"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":co_tran", $datos["co_tran"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":forma_pag", $datos["forma_pag"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tot_bruto", $datos["tot_bruto"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tot_neto", $datos["tot_neto"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":iva", $datos["iva"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tasa", $datos["tasa"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":moneda", $datos["moneda"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":co_sucu", $datos["co_sucu"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tasag", $datos["tasag"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tasag10", $datos["tasag10"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tasag20", $datos["tasag20"], PDO::PARAM_STR);
+        try {
 
 
+        $sql = "pInsertarPedidoVenta @sdFec_Emis='$datos[sdFec_Emis]',@sDoc_Num='$datos[sDoc_Num]',@sDescrip='$datos[sDescrip]',@sCo_Cli='$datos[sCo_Cli]',@sCo_Tran='$datos[sCo_Tran]',@sCo_Cond='$datos[sCo_Cond]',@sCo_Ven='$datos[sCo_Ven]',
+                     @sCo_Cta_Ingr_Egr=$datos[sCo_Cta_Ingr_Egr],@sCo_Mone='$datos[sCo_Mone]',@bAnulado=$datos[bAnulado],@sdFec_Reg='$datos[sdFec_Reg]',@sdFec_Venc='$datos[sdFec_Venc]',@sStatus='$datos[sStatus]',@deTasa=$datos[deTasa],@sN_Control=$datos[sN_Control],@sPorc_Desc_Glob=$datos[sPorc_Desc_Glob],@deMonto_Desc_Glob=$datos[deMonto_Desc_Glob],
+                     @sPorc_Reca=$datos[sPorc_Reca],@deMonto_Reca=$datos[deMonto_Reca],@deSaldo=$datos[deSaldo],@deTotal_Bruto=$datos[deTotal_Bruto],@deMonto_Imp=$datos[deMonto_Imp],@deMonto_Imp3=$datos[deMonto_Imp3],@deOtros1=$datos[deOtros1],@deOtros2=$datos[deOtros2],@deOtros3=$datos[deOtros3],@deMonto_Imp2=$datos[deMonto_Imp2],
+                     @deTotal_Neto=$datos[deTotal_Neto],@sComentario=$datos[sComentario],@sDir_Ent=$datos[sDir_Ent],@bContrib=$datos[bContrib],@bImpresa=$datos[bImpresa],@sSalestax=$datos[sSalestax],@sImpfis=$datos[sImpfis],@sImpfisfac=$datos[sImpfisfac],@bVen_Ter=$datos[bVen_Ter],@sDis_Cen=$datos[sDis_Cen],@sCampo1=$datos[sCampo1],
+                     @sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],@sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6], @sCampo7=$datos[sCampo7],@sCampo8=$datos[sCampo8],@sRevisado=$datos[sRevisado],@sTrasnfe=$datos[sTrasnfe],@sco_sucu_in='$datos[sco_sucu_in]',@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
 
-        if($stmt->execute()){
+            $stmt = Conexion::conectar()->query($sql);
 
             return "ok";
 
-        }else{
+            $stmt->close();
 
-            return "error";
+            $stmt = null;
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
 
         }
 
-        $stmt->close();
 
-        $stmt = null;
     }
 
-    static public function mdlInsertarRenglonPedido($tabla,$datos){
+    static public function mdlInsertarRenglonPedido($datos){
 
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fact_num, reng_num,tipo_doc,co_art,co_alma,total_art,stotal_art,pendiente,uni_venta,prec_vta,tipo_imp,reng_neto,cant_imp,total_uni, fec_lote) 
-                                                    VALUES (:fact_num,:reng_num,:tipo_doc,:co_art,:co_alma,:total_art,:stotal_art,:pendiente,:uni_venta,:prec_vta,:tipo_imp,:reng_neto,:cant_imp,:total_uni,SYSDATETIME())");
+        try {
 
-        $stmt->bindParam(":fact_num", $datos["fact_num"], PDO::PARAM_STR);
+            $sql = "pInsertarRenglonesPedidoVenta @sDoc_Num='$datos[sDoc_Num]',@sCo_Art='$datos[sCo_Art]',@sDes_Art=$datos[sDes_Art],@sCo_Uni='$datos[sCo_Uni]',@sSco_Uni=$datos[sSco_Uni],@sCo_Alma='$datos[sCo_Alma]',
+            @sCo_Precio='$datos[sCo_Precio]',@sTipo_Imp='$datos[sTipo_Imp]',@sTipo_Imp2=$datos[sTipo_Imp2],@sTipo_Imp3=$datos[sTipo_Imp3],
+			@deTotal_Art=$datos[deTotal_Art],@deStotal_Art=$datos[deStotal_Art],@dePrec_Vta=$datos[dePrec_Vta],@sPorc_Desc=$datos[sPorc_Desc],@deMonto_Desc=$datos[deMonto_Desc],@dePorc_Imp=$datos[dePorc_Imp],@dePorc_Imp2=$datos[dePorc_Imp2],
+			@dePorc_Imp3=$datos[dePorc_Imp3],@deReng_Neto=$datos[deReng_Neto], @dePendiente=$datos[dePendiente],@dePendiente2=$datos[dePendiente2],@sTipo_Doc=$datos[sTipo_Doc], @gRowguid_Doc=$datos[gRowguid_Doc],@sNum_Doc=$datos[sNum_Doc],
+			@deMonto_Imp=$datos[deMonto_Imp],@deTotal_Dev=$datos[deTotal_Dev],@deMonto_Dev=$datos[deMonto_Dev],@deOtros=$datos[deOtros],@deMonto_Imp2=$datos[deMonto_Imp2],@deMonto_Imp3=$datos[deMonto_Imp3],@sComentario=$datos[sComentario],
+			@sDis_Cen=$datos[sDis_Cen],@deMonto_Desc_Glob=$datos[deMonto_Desc_Glob], @deMonto_Reca_Glob=$datos[deMonto_Reca_Glob], @deOtros1_Glob=$datos[deOtros1_Glob],@deOtros2_glob=$datos[deOtros2_glob],@deOtros3_glob=$datos[deOtros3_glob],
+			@deMonto_imp_afec_glob=$datos[deMonto_imp_afec_glob],@deMonto_imp2_afec_glob=$datos[deMonto_imp2_afec_glob],@deMonto_imp3_afec_glob=$datos[deMonto_imp3_afec_glob],@iRENG_NUM=$datos[iRENG_NUM],@sREVISADO=$datos[sREVISADO],
+			@sTRASNFE=$datos[sTRASNFE],@sco_sucu_in='$datos[sco_sucu_in]', @sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
 
-        $stmt->bindParam(":reng_num", $datos["reng_num"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tipo_doc", $datos["tipo_doc"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":co_art", $datos["co_art"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":co_alma", $datos["co_alma"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":total_art", $datos["total_art"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":stotal_art", $datos["stotal_art"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":pendiente", $datos["pendiente"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":uni_venta", $datos["uni_venta"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":prec_vta", $datos["prec_vta"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":tipo_imp", $datos["tipo_imp"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":reng_neto", $datos["reng_neto"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":cant_imp", $datos["cant_imp"], PDO::PARAM_STR);
-
-        $stmt->bindParam(":total_uni", $datos["total_uni"], PDO::PARAM_STR);
-
-
-
-        if($stmt->execute()){
+            $stmt = Conexion::conectar()->query($sql);
 
             return "ok";
 
-        }else{
+            $stmt->close();
 
-            return "error";
+            $stmt = null;
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
 
         }
 
-        $stmt->close();
+        return $stmt -> fetch();
+
+        $stmt -> close();
 
         $stmt = null;
     }
@@ -281,6 +239,58 @@ class ModelsOrders{
         $stmt -> execute();
 
         return $stmt -> fetch(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    static public function mdlProbarStored(){
+
+        try {
+            $dato = array(
+                "valor" =>'0101005'
+            );
+
+            $sql = "EXEC pSeleccionarArticulo @sco_art='$dato[valor]'";
+
+            $stmt = Conexion::conectar()->query($sql);
+
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
+
+        }
+
+        return $stmt -> fetch();
+
+        $stmt -> close();
+
+        $stmt = null;
+
+    }
+
+    static public function mdlConsecutivoProximo(){
+
+        try {
+
+            $sql ="EXEC pObtenerProximoNumero @sTabla=N'saPedidoVenta', @sCampo=N'doc_num'";
+
+            $stmt = Conexion::conectar()->query($sql);
+
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
+
+        }
+
+        return $stmt -> fetch();
 
         $stmt -> close();
 
