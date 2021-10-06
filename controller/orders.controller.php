@@ -204,7 +204,7 @@ class ControllerOrders{
 
     static public function ctrShowOrderUser($obj){
 
-        $respuesta = ModelsOrders::mdlShowOrderUser("pedidos_app","co_user",$obj["co_user"]); //BUSCO TODOS LOS CLIENTES
+        $respuesta = ModelsOrders::mdlShowOrderUser("saPedidoVentaApp","co_user",$obj["co_user"]); //BUSCO TODOS LOS CLIENTES
 
         if(count($respuesta)>0){
 
@@ -224,7 +224,7 @@ class ControllerOrders{
                     "estatus"=> isset($resul["estatus"]) ? $resul["estatus"] : '',
                     "telefonos" => $value["telefonos"],
                     "fecha_reg" =>$value["fecha_reg"],
-                    "renglones" =>ModelsOrders::mdlShowOrderUser("reng_pedapp","fact_num",$value["fact_num"])
+                    "renglones" =>ModelsOrders::mdlShowOrderUser("saPedidoVentaRengApp","fact_num",$value["fact_num"])
                 );
             }
 
@@ -239,7 +239,7 @@ class ControllerOrders{
                 array(
                     "error" => true,
                     "statusCode"=>400,
-                    "infoOrder" =>"",
+                    "infoOrder" =>$respuesta,
                     "mensaje" => "no tienes pedido"
                 ));
 
@@ -254,7 +254,7 @@ class ControllerOrders{
         $fecha_desde = $obj["dateStart"];
         $fecha_hasta = $obj["dateEnd"];
 
-        $respuesta = ModelsOrders::mdlShowOrderUserReport("pedidos",$fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
+        $respuesta = ModelsOrders::mdlShowOrderUserReport($fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
 
         if(count($respuesta)>0){
 
@@ -262,17 +262,17 @@ class ControllerOrders{
 
                 $resultado[$key] = array(
                     "_id"=> $key+1,
-                    "fact_num" => $value["fact_num"],
+                    "doc_num" => $value["doc_num"],
                     "co_cli" => $value["co_cli"],
                     "co_user" => $obj["co_user"],
-                    "tot_neto" => $value["tot_neto"],
+                    "total_neto" => $value["total_neto"],
                     "cli_des" => $value["cli_des"],
                     "direc1" => $value["direc1"],
                     "rif" => $value["rif"],
                     "telefonos" => $value["telefonos"],
                     "fecha_reg" =>$value["fecha_reg"],
                     "estatus" =>$value["estatus"],
-                    "renglones" =>ModelsOrders::mdlShowOrderReport("reng_ped",$value["fact_num"])
+                    "renglones" =>ModelsOrders::mdlShowOrderReport($value["doc_num"])
                 );
             }
 
@@ -293,6 +293,8 @@ class ControllerOrders{
         }
 
     }
+
+
 
     static public function ctrListOptionPedido($data){
 

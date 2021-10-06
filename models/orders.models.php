@@ -108,17 +108,17 @@ class ModelsOrders{
 
 
     //ENCABEZADO
-    static public function mdlShowOrderUserReport($tabla,$fecha_desde,$fecha_hasta){
+    static public function mdlShowOrderUserReport($fecha_desde,$fecha_hasta){
 
-        $stmt = Conexion::conectar()->query("select p.fact_num,p.co_cli,p.tot_neto, p.dir_ent direc1, 
-                                                        (case when p.status=0 THEN 'Sin procesar' ELSE 
+        $stmt = Conexion::conectar()->query("SELECT p.doc_num,p.co_cli,p.total_neto, p.dir_ent direc1, 
+                                                        (CASE WHEN p.status=0 THEN 'Sin procesar' ELSE 
                                                         CASE WHEN p.status=1 THEN 'Parc procesado' ELSE
                                                         CASE WHEN p.status=2 THEN 'Procesado' END END END) AS estatus, 
                                                         p.fec_emis fecha_reg,c.cli_des, c.rif, c.telefonos
-                                                            from $tabla p 
-                                                            left join clientes c
-                                                            on p.co_cli = c.co_cli
-                                                            where p.fec_emis between DATEADD(DAY,-1,'".$fecha_desde."') and '".$fecha_hasta."' order by p.fact_num DESC");
+                                                            FROM saPedidoVenta p 
+                                                            LEFT JOIN saCliente c
+                                                            ON p.co_cli = c.co_cli
+                                                            WHERE p.fec_emis BETWEEN DATEADD(DAY,-1,'".$fecha_desde."') AND '".$fecha_hasta."' ORDER BY p.doc_num DESC");
 
 
         $stmt -> execute();
@@ -131,12 +131,32 @@ class ModelsOrders{
     }
 
     //DETALLE
-    static public function mdlShowOrderReport($tabla,$valor){
+    static public function mdlShowOrderReport($valor){
 
-        $stmt = Conexion::conectar()->query("select r.reng_doc,r.fact_num,r.co_art,r.co_alma,r.total_art,r.prec_vta,r.total_art total, fecha_reg = '',  a.art_des, descuento =0, stock_prev=0, a.stock_act
-                                                            from $tabla r
-                                                            left join art a
-                                                            on r.co_art = a.co_art  where r.fact_num = $valor ");
+        $stmt = Conexion::conectar()->query("SELECT r.reng_num,r.doc_num,r.co_art,r.co_alma,r.total_art,r.prec_vta,r.total_art total,
+                                                            fecha_reg = '',  a.art_des, descuento =0, stock_prev=0, 
+                                                            (SELECT ISNULL([ACT], 0) AS STOCK_ACT
+                                                                FROM
+                                                                    ( SELECT
+                                                                        saArticulo.co_art CO_ART, SUM(saStockAlmacen.stock) AS stock, saStockAlmacen.tipo AS tipo
+                                                                      FROM
+                                                                        saArticulo
+                                                                        LEFT JOIN saStockAlmacen ON saArticulo.co_art = saStockAlmacen.co_art
+                                                                      WHERE
+                                                                        saArticulo.co_art = a.co_art
+                                                                      GROUP BY
+                                                                        saArticulo.co_art, saStockAlmacen.tipo
+                                                                    ) pstockact PIVOT ( SUM(stock) FOR tipo IN ( [ACT], [LLE], [COM], [DES], [SACT], [SLLE], [SCOM], [SDES] ) ) 
+                                                                    AS PVTSTOCK
+                                                                    LEFT JOIN saArtUnidad ArtUnidadP ON ArtUnidadP.co_art = PVTSTOCK.CO_ART
+                                                                                                        AND ArtUnidadP.uni_principal = 1
+                                                                    LEFT JOIN saUnidad UnidadP ON ArtUnidadP.co_uni = UnidadP.co_uni
+                                                                    LEFT JOIN saArtUnidad ArtUnidadS ON ArtUnidadS.co_art = PVTSTOCK.CO_ART
+                                                                                                        AND ArtUnidadS.uni_secundaria = 1
+                                                                    LEFT JOIN saUnidad UnidadS ON ArtUnidadS.co_uni = UnidadS.co_uni) as stock_actual
+                                                        FROM saPedidoVentaReng r
+                                                        LEFT JOIN saArticulo a
+                                                        ON r.co_art = a.co_art WHERE r.doc_num = '$valor' ");
 
         $stmt -> execute();
 
@@ -233,8 +253,8 @@ class ModelsOrders{
                                                         (case when status=0 THEN 'Sin procesar' ELSE 
                                                         CASE WHEN status=1 THEN 'Parc procesado' ELSE
                                                         CASE WHEN status=2 THEN 'Procesado' END END END) AS estatus 
-                                                            from pedidos  
-                                                            where fact_num = '".$fact_num."' ");
+                                                            from saPedidoVenta  
+                                                            where doc_num = '".$fact_num."' ");
 
         $stmt -> execute();
 

@@ -28,6 +28,22 @@ switch ($method){
         echo $respuesta;
         break;
 
+    case "reportnotaentrega":
+
+        $respuesta = ControllerClients::ctrObtenerNotasEntregaXCliente($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "documentoscliente" :
+
+        $respuesta = ControllerClients::ctrObtenerDocumentos($obj);
+
+        echo $respuesta;
+
+        break;
+
     default:
         echo json_encode(
             array(

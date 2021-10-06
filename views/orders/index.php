@@ -51,6 +51,7 @@ switch ($method){
 
         break;
 
+
     default:
         echo json_encode(
             array(
