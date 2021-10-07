@@ -63,8 +63,6 @@ class ControllerOrders{
 
             );
 
-
-
             $resultado = ModelsOrders::mdlCreateClientOrder("saPedidoVentaApp",$data,$pedido["Codigo"]+1);
 
             //armar el array para insertar el encabezado
@@ -178,6 +176,7 @@ class ControllerOrders{
                         "error" => false,
                         "statusCode"=>200,
                         "renglones"=>$respuesta,
+                        "pedido" => $pedido["Codigo"] + 1,
                         "mensaje" =>"Se genero el pedido # ".$pedido["Codigo"] + 1,
 
                     ));
@@ -214,10 +213,10 @@ class ControllerOrders{
 
                 $resultado[$key] = array(
                     "_id"=> $key+1,
-                    "fact_num" => $value["fact_num"],
+                    "doc_num" => $value["fact_num"],
                     "co_cli" => $value["co_cli"],
                     "co_user" => $value["co_user"],
-                    "tot_neto" => $value["tot_neto"],
+                    "total_neto" => $value["tot_neto"],
                     "cli_des" => $value["cli_des"],
                     "direc1" => $value["direc1"],
                     "rif" => $value["rif"],
@@ -317,16 +316,16 @@ class ControllerOrders{
 
     static public function ctrProbarStored($data){
 
-        $respuesta = ModelsOrders::mdlConsecutivoProximo();
+        //$respuesta = ModelsOrders::mdlConsecutivoProximo();
 
-       // $respuesta = ModelsOrders::mdlProbarStored();
+        $respuesta = ModelsOrders::mdlProbarStored();
 
 
         echo json_encode(
             array(
                 "error" => false,
                 "statusCode"=>200,
-                "resultado" =>rtrim($respuesta["Codigo"])
+                "resultado" =>$respuesta["co_art"]
             )
 
         );
