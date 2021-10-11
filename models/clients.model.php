@@ -98,4 +98,76 @@ class ModelClients{
 
         $stmt = null;
     }
+
+    static public function mdlListOptionCliente($tabla,$item1,$item2){
+
+        $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM($item1)) as value,$item2 as label FROM $tabla  ");
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    static public function mdlProximoNumero(){
+
+        try {
+
+            $sql ="EXEC pObtenerProximoNumero @sTabla=N'saCliente', @sCampo=N'co_cli' ,@sPrefijo=''";
+
+            $stmt = Conexion::conectar()->query($sql);
+
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
+
+        }
+
+        return $stmt -> fetch();
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    static public function mdlregistrarCliente($datos){
+
+        try {
+
+            $sql="exec pInsertarCliente @sCo_Cli='$datos[sCo_Cli]',@sCli_Des='$datos[sCli_Des]',@sCo_Seg='$datos[sCo_Seg]',@sCo_Zon='$datos[sCo_Zon]',@sSalesTax=$datos[sSalesTax],@sLogin=$datos[sLogin],@binactivo=$datos[binactivo],@blunes=$datos[blunes],
+            @bmartes=$datos[bmartes],@bmiercoles=$datos[bmiercoles],@bjueves=$datos[bjueves],@bviernes=$datos[bviernes], @bsabado=$datos[bsabado],@bdomingo=$datos[bdomingo],@bcontrib=$datos[bcontrib],@bvalido=$datos[bvalido],@bsincredito=$datos[bsincredito],@sDirec1='$datos[sDirec1]',
+            @sDirec2='$datos[sDirec2]',@stelefonos='$datos[stelefonos]',@sfax=$datos[sfax],@sRespons='$datos[sRespons]',@sdfecha_reg='$datos[sdfecha_reg]',@stip_cli='$datos[stip_cli]',@demont_cre=$datos[demont_cre],@iplaz_pag=$datos[iplaz_pag],@iId=$datos[iId], @iPuntaje=$datos[iPuntaje],@dedesc_ppago=$datos[dedesc_ppago],@dedesc_glob=$datos[dedesc_glob],
+            @srif='$datos[srif]',@sdis_cen=$datos[sdis_cen],@snit=$datos[snit],@sco_cta_ingr_egr='$datos[sco_cta_ingr_egr]',@scomentario=$datos[scomentario],@bjuridico=$datos[bjuridico],@itipo_adi=$datos[itipo_adi],@smatriz=$datos[smatriz],@sco_tab=$datos[sco_tab],@stipo_per=$datos[stipo_per],@sco_pais='$datos[sco_pais]',
+            @sciudad=$datos[sciudad],@szip=$datos[szip],@sWebSite=$datos[sWebSite],@bcontribu_e=$datos[bcontribu_e],@brete_regis_doc=$datos[brete_regis_doc],@deporc_esp=$datos[deporc_esp],@spassword=$datos[spassword],@sestado=$datos[sestado],@sserialp=$datos[sserialp],@semail='$datos[semail]',@sdir_ent2=$datos[sdir_ent2],@sfrecu_vist=$datos[sfrecu_vist],
+            @shorar_caja=$datos[shorar_caja],@sco_ven='$datos[sco_ven]', @sco_mone='$datos[sco_mone]',@scond_pag='$datos[scond_pag]',@sTComp=$datos[sTComp],@sN_db=$datos[sN_db],@sN_cr=$datos[sN_cr],@semail_alterno=$datos[semail_alterno],@sCampo1=$datos[sCampo1],@sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],
+            @sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6],@sCampo7=$datos[sCampo7],@sCampo8=$datos[sCampo8],@sRevisado=$datos[sRevisado], @sTrasnfe=$datos[sTrasnfe],@sco_sucu_in='$datos[sco_sucu_in]',@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
+
+
+            $stmt = Conexion::conectar()->query($sql);
+
+            return "ok";
+
+            $stmt->close();
+
+            $stmt = null;
+
+
+        }catch (PDOException $pe) {
+
+            die("Error occurred:" . $pe->getMessage());
+
+        }
+
+        return $stmt -> fetch();
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
 }

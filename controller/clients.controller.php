@@ -118,4 +118,127 @@ class ControllerClients{
 
         return $resultado;
     }
+
+    static public function ctrObtenerOpciones(){
+
+        $getTipo  = ModelClients::mdlListOptionCliente("saTipoCliente","tip_cli","des_tipo");
+
+        $getCondicionespago= ModelClients::mdlListOptionCliente("saCondicionPago","co_cond","cond_des");
+
+        $getSegmento= ModelClients::mdlListOptionCliente("saSegmento","co_seg","seg_des");
+
+        $proximoNumero = ModelClients::mdlProximoNumero();
+
+        echo json_encode(
+            array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoCondiciones" =>$getCondicionespago,
+                "infoTipo" =>$getTipo,
+                "infoSegmento" =>$getSegmento,
+                "correlativo" => $proximoNumero["Codigo"] +1
+            )
+        );
+    }
+
+    static public function ctrRegistrarCliente($data){
+
+        $proximoNumero = ModelClients::mdlProximoNumero();
+
+        $datos = array(
+            "sCo_Cli"=>$proximoNumero["Codigo"] +1,
+            "sCli_Des"=>$data["nombre"],
+            "sCo_Seg"=>$data["segmento"],
+            "sCo_Zon"=>"0002",
+            "sSalesTax"=>"NULL",
+            "sLogin"=>"NULL",
+            "binactivo"=>0,
+            "blunes"=>0,
+            "bmartes"=>0,
+            "bmiercoles"=>0,
+            "bjueves"=>0,
+            "bviernes"=>0,
+            "bsabado"=>0,
+            "bdomingo"=>0,
+            "bcontrib"=>1,
+            "bvalido"=>0,
+            "bsincredito"=>0,
+            "sDirec1"=>$data["direccion"],
+            "sDirec2"=>$data["direccion"],
+            "stelefonos"=>$data["telefono"],
+            "sfax"=>"NULL",
+            "sRespons"=>$data["responsable"],
+            "sdfecha_reg"=>date("Y-m-d H:i:s"),
+            "stip_cli"=>$data["tipo"],
+            "demont_cre"=>0,
+            "iplaz_pag"=>0,
+            "iId"=>0,
+            "iPuntaje"=>0,
+            "dedesc_ppago"=>0,
+            "dedesc_glob"=>0,
+            "srif"=>$data["rif"],
+            "sdis_cen"=>"NULL",
+            "snit"=>"NULL",
+            "sco_cta_ingr_egr"=>"120101",
+            "scomentario"=>"NULL",
+            "bjuridico"=>0,
+            "itipo_adi"=>1,
+            "smatriz"=>"NULL",
+            "sco_tab"=>"NULL",
+            "stipo_per"=>"NULL",
+            "sco_pais"=>"VE",
+            "sciudad"=>"CARACAS",
+            "szip"=>"NULL",
+            "sWebSite"=>"NULL",
+            "bcontribu_e"=>0,
+            "brete_regis_doc"=>0,
+            "deporc_esp"=>0,
+            "spassword"=>"NULL",
+            "sestado"=>"NULL",
+            "sserialp"=>"NULL",
+            "semail"=>$data["email"],
+            "sdir_ent2"=>"NULL",
+            "sfrecu_vist"=>"NULL",
+            "shorar_caja"=>"NULL",
+            "sco_ven"=>$data["co_ven"],
+            "sco_mone"=>"US$",
+            "scond_pag"=>$data["condicion"],
+            "sTComp"=>"NULL",
+            "sN_db"=>"NULL",
+            "sN_cr"=>"NULL",
+            "semail_alterno"=>"NULL",
+            "sCampo1"=>"NULL",
+            "sCampo2"=>"NULL",
+            "sCampo3"=>"NULL",
+            "sCampo4"=>"NULL",
+            "sCampo5"=>"NULL",
+            "sCampo6"=>"NULL",
+            "sCampo7"=>"NULL",
+            "sCampo8"=>"NULL",
+            "sRevisado"=>"NULL",
+            "sTrasnfe"=>"NULL",
+            "sco_sucu_in"=>$data["sucursal"],
+            "sco_us_in"=>"PROFIT",
+            "sMaquina"=>"AppMovil"
+        );
+
+
+        $resultado = ModelClients::mdlregistrarCliente($datos);
+
+        if($resultado == "ok"){
+            echo json_encode(
+                array(
+                    "error" => false,
+                    "statusCode"=>200,
+                    "mensaje" =>"Registro creado exitosamente #".$proximoNumero["Codigo"] +1
+                ));
+        }else{
+            echo json_encode(
+                array(
+                    "error" => true,
+                    "statusCode"=>400,
+                    "mensaje" =>"Error, registrando el cliente ". $resultado
+                ));
+        }
+    }
 }

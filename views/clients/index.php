@@ -44,6 +44,22 @@ switch ($method){
 
         break;
 
+    case "buscaroptions":
+
+        $respuesta = ControllerClients::ctrObtenerOpciones();
+
+        echo $respuesta;
+
+        break;
+
+    case "clientregister":
+
+        $respuesta = ControllerClients::ctrRegistrarCliente($obj);
+
+        echo $respuesta;
+
+        break;
+
     default:
         echo json_encode(
             array(
