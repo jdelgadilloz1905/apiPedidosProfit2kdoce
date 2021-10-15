@@ -12,17 +12,17 @@ class ControllerOrders{
             $datos = array(
                 "sdFec_Emis"=>date("Y-m-d H:i:s"),
                 "sDoc_Num"=>$pedido["Codigo"]+1,
-                "sDescrip"=>'Pedido generado desde la App movil',
+                "sDescrip"=>"Pedido generado desde la App movil",
                 "sCo_Cli"=>$data["client"]["co_cli"],
                 "sCo_Tran"=>$data["transporte"],
                 "sCo_Cond"=>$data["formaPago"],
                 "sCo_Ven"=>$data["co_ven"],
                 "sCo_Cta_Ingr_Egr"=>"NULL",
-                "sCo_Mone"=>'BSF',
+                "sCo_Mone"=>"US$",
                 "bAnulado"=>0,
                 "sdFec_Reg"=>date("Y-m-d H:i:s"),
                 "sdFec_Venc"=>date("Y-m-d H:i:s"),
-                "sStatus"=>'0',
+                "sStatus"=>"0",
                 "deTasa"=>1,
                 "sN_Control"=>"NULL",
                 "sPorc_Desc_Glob"=>"NULL",
@@ -58,8 +58,8 @@ class ControllerOrders{
                 "sRevisado"=>"NULL",
                 "sTrasnfe"=>"NULL",
                 "sco_sucu_in"=>$data["sucursal"],
-                "sco_us_in"=>'',
-                "sMaquina"=>'appMovil'
+                "sco_us_in"=>"",
+                "sMaquina"=>"appMovil"
 
             );
 
@@ -157,7 +157,7 @@ class ControllerOrders{
                             "sCo_Art"=>$value["co_art"],
                             "sCo_Uni"=>$unidaItem["co_uni"],
                             "deCantidad"=>$value["quantity"],
-                            "sTipoStock"=>'COM',
+                            "sTipoStock"=>"COM",
                             "bSumarStock"=>1,
                             "bPermiteStockNegativo"=>0
                         );
@@ -220,7 +220,7 @@ class ControllerOrders{
                     "cli_des" => $value["cli_des"],
                     "direc1" => $value["direc1"],
                     "rif" => $value["rif"],
-                    "estatus"=> isset($resul["estatus"]) ? $resul["estatus"] : '',
+                    "estatus"=> isset($resul["estatus"]) ? $resul["estatus"] : "",
                     "telefonos" => $value["telefonos"],
                     "fecha_reg" =>$value["fecha_reg"],
                     "renglones" =>ModelsOrders::mdlShowOrderUser("saPedidoVentaRengApp","fact_num",$value["fact_num"])
