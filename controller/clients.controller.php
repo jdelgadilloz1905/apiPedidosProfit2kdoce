@@ -168,7 +168,7 @@ class ControllerClients{
             "stelefonos"=>$data["telefono"],
             "sfax"=>"NULL",
             "sRespons"=>$data["responsable"],
-            "sdfecha_reg"=>date("Y-m-d H:i:s"),
+            "sdfecha_reg"=>date("Ymd H:i:s"),
             "stip_cli"=>$data["tipo"],
             "demont_cre"=>0,
             "iplaz_pag"=>0,

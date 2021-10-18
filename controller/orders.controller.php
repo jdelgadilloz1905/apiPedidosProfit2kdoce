@@ -10,7 +10,7 @@ class ControllerOrders{
         if(isset($data["client"]["cli_des"])){
 
             $datos = array(
-                "sdFec_Emis"=>date("Y-m-d H:i:s"),
+                "sdFec_Emis"=>date("Ymd H:i:s"),
                 "sDoc_Num"=>$pedido["Codigo"]+1,
                 "sDescrip"=>"Pedido generado desde la App movil",
                 "sCo_Cli"=>$data["client"]["co_cli"],
@@ -20,8 +20,8 @@ class ControllerOrders{
                 "sCo_Cta_Ingr_Egr"=>"NULL",
                 "sCo_Mone"=>"US$",
                 "bAnulado"=>0,
-                "sdFec_Reg"=>date("Y-m-d H:i:s"),
-                "sdFec_Venc"=>date("Y-m-d H:i:s"),
+                "sdFec_Reg"=>date("Ymd H:i:s"),
+                "sdFec_Venc"=>date("Ymd H:i:s"),
                 "sStatus"=>"0",
                 "deTasa"=>1,
                 "sN_Control"=>"NULL",
@@ -138,7 +138,7 @@ class ControllerOrders{
                         "art_des" =>$value["art_des"],
                         "total"=>$value["price"] * $value["quantity"],
                         "descuento"=>$value["discount"],
-                        "stock_prev"=>$value["stock_act"],
+                        "stock_prev"=>$value["stock_act"] !="NULL" ? $value["stock_act"] : 0 ,
                         "stock_act"=>$value["stock_act"]- $value["quantity"]
 
                     );
@@ -330,6 +330,8 @@ class ControllerOrders{
 
         );
     }
+
+
 
 
 }

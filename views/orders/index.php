@@ -51,6 +51,21 @@ switch ($method){
 
         break;
 
+    case "obtenerproximonumero":
+
+        $respuesta = ModelsOrders::mdlConsecutivoProximo();
+
+        echo json_encode(
+            array(
+                "error" => false,
+                "statusCode"=>200,
+                "resultado" =>$respuesta["Codigo"] +1
+            )
+
+        );
+
+        break;
+
 
     default:
         echo json_encode(
