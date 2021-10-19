@@ -118,7 +118,7 @@ class ModelsOrders{
                                                             FROM saPedidoVenta p 
                                                             LEFT JOIN saCliente c
                                                             ON p.co_cli = c.co_cli
-                                                            WHERE p.fec_emis BETWEEN DATEADD(DAY,-1,'".$fecha_desde."') AND '".$fecha_hasta."' ORDER BY p.doc_num DESC");
+                                                            WHERE p.fec_emis BETWEEN DATEADD(DAY,-1,'".$fecha_desde."') AND DATEADD(DAY,1,'".$fecha_hasta."') ORDER BY p.doc_num DESC");
 
 
         $stmt -> execute();
@@ -244,7 +244,7 @@ class ModelsOrders{
         $sql = "pInsertarPedidoVenta @sdFec_Emis='$datos[sdFec_Emis]',@sDoc_Num='$datos[sDoc_Num]',@sDescrip='$datos[sDescrip]',@sCo_Cli='$datos[sCo_Cli]',@sCo_Tran='$datos[sCo_Tran]',@sCo_Cond='$datos[sCo_Cond]',@sCo_Ven='$datos[sCo_Ven]',
                      @sCo_Cta_Ingr_Egr=$datos[sCo_Cta_Ingr_Egr],@sCo_Mone='$datos[sCo_Mone]',@bAnulado=$datos[bAnulado],@sdFec_Reg='$datos[sdFec_Reg]',@sdFec_Venc='$datos[sdFec_Venc]',@sStatus='$datos[sStatus]',@deTasa=$datos[deTasa],@sN_Control=$datos[sN_Control],@sPorc_Desc_Glob=$datos[sPorc_Desc_Glob],@deMonto_Desc_Glob=$datos[deMonto_Desc_Glob],
                      @sPorc_Reca=$datos[sPorc_Reca],@deMonto_Reca=$datos[deMonto_Reca],@deSaldo=$datos[deSaldo],@deTotal_Bruto=$datos[deTotal_Bruto],@deMonto_Imp=$datos[deMonto_Imp],@deMonto_Imp3=$datos[deMonto_Imp3],@deOtros1=$datos[deOtros1],@deOtros2=$datos[deOtros2],@deOtros3=$datos[deOtros3],@deMonto_Imp2=$datos[deMonto_Imp2],
-                     @deTotal_Neto=$datos[deTotal_Neto],@sComentario=$datos[sComentario],@sDir_Ent=$datos[sDir_Ent],@bContrib=$datos[bContrib],@bImpresa=$datos[bImpresa],@sSalestax=$datos[sSalestax],@sImpfis=$datos[sImpfis],@sImpfisfac=$datos[sImpfisfac],@bVen_Ter=$datos[bVen_Ter],@sDis_Cen=$datos[sDis_Cen],@sCampo1=$datos[sCampo1],
+                     @deTotal_Neto=$datos[deTotal_Neto],@sComentario='$datos[sComentario]',@sDir_Ent=$datos[sDir_Ent],@bContrib=$datos[bContrib],@bImpresa=$datos[bImpresa],@sSalestax=$datos[sSalestax],@sImpfis=$datos[sImpfis],@sImpfisfac=$datos[sImpfisfac],@bVen_Ter=$datos[bVen_Ter],@sDis_Cen=$datos[sDis_Cen],@sCampo1=$datos[sCampo1],
                      @sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],@sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6], @sCampo7=$datos[sCampo7],@sCampo8=$datos[sCampo8],@sRevisado=$datos[sRevisado],@sTrasnfe=$datos[sTrasnfe],@sco_sucu_in='$datos[sco_sucu_in]',@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
 
             $stmt = Conexion::conectar()->query($sql);

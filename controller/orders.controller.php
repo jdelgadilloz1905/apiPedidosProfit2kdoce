@@ -11,7 +11,7 @@ class ControllerOrders{
 
             $datos = array(
                 "sdFec_Emis"=>date("Ymd H:i:s"),
-                "sDoc_Num"=>$pedido["Codigo"]+1,
+                "sDoc_Num"=>str_pad($pedido["Codigo"]+1, 10, "0", STR_PAD_LEFT),
                 "sDescrip"=>"Pedido generado desde la App movil",
                 "sCo_Cli"=>$data["client"]["co_cli"],
                 "sCo_Tran"=>$data["transporte"],
@@ -38,7 +38,7 @@ class ControllerOrders{
                 "deOtros3"=>0,
                 "deMonto_Imp2"=>0,
                 "deTotal_Neto"=>(($data["total_neto"]*16)/100)+$data["total_neto"],
-                "sComentario"=>"NULL",
+                "sComentario"=>$data["direc_ven"],
                 "sDir_Ent"=>"NULL",
                 "bContrib"=>1,
                 "bImpresa"=>0,
@@ -63,7 +63,7 @@ class ControllerOrders{
 
             );
 
-            $resultado = ModelsOrders::mdlCreateClientOrder("saPedidoVentaApp",$data,$pedido["Codigo"]+1);
+            $resultado = ModelsOrders::mdlCreateClientOrder("saPedidoVentaApp",$data,str_pad($pedido["Codigo"]+1, 10, "0", STR_PAD_LEFT));
 
             //armar el array para insertar el encabezado
 
@@ -81,7 +81,7 @@ class ControllerOrders{
                     //se arma el array de los renglones
 
                     $pedidoRenglon = array(
-                        "sDoc_Num"=>$pedido["Codigo"]+1,
+                        "sDoc_Num"=>str_pad($pedido["Codigo"]+1, 10, "0", STR_PAD_LEFT),
                         "sCo_Art"=>$value["co_art"],
                         "sDes_Art"=>"NULL",
                         "sCo_Uni"=>$unidaItem["co_uni"],
@@ -131,7 +131,7 @@ class ControllerOrders{
 
                     $response = array(
                         "reng_doc" => $key+1,
-                        "fact_num" => $pedido["Codigo"]+1,
+                        "fact_num" => str_pad($pedido["Codigo"]+1, 10, "0", STR_PAD_LEFT),
                         "co_art" => $value["co_art"],
                         "total_art"=>$value["quantity"],
                         "prec_vta" =>$value["price"],
@@ -177,7 +177,7 @@ class ControllerOrders{
                         "statusCode"=>200,
                         "renglones"=>$respuesta,
                         "pedido" => $pedido["Codigo"] + 1,
-                        "mensaje" =>"Se genero el pedido # ".$pedido["Codigo"] + 1,
+                        "mensaje" =>"Se genero el pedido # ".str_pad($pedido["Codigo"]+1, 10, "0", STR_PAD_LEFT),
 
                     ));
 
