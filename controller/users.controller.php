@@ -345,7 +345,7 @@ class ControllerUsers{
             echo json_encode(array(
                 "statusCode" => 400,
                 "error" => true,
-                "mensaje" =>"¡El correo electrónico y/o usuario ya existe, por favor ingrese otro diferente!",
+                "mensaje" =>"¡El correo electrónico y/o usuario ya existe.",
             ));
 
         }else{
