@@ -34,12 +34,6 @@ switch ($method){
         echo $respuesta;
         break;
 
-    /*CONSULTAS DE PROFIT VERSION 2K8*/
-    case "getProduct":
-        $respuesta = ControllerProducts::ctrShowProduct($obj);
-        echo $respuesta;
-        break;
-
     case "favorites":
         $respuesta = ControllerProducts::ctrGetProductsFavorites($obj);
         echo $respuesta;

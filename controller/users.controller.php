@@ -35,7 +35,8 @@ class ControllerUsers{
                                     "modo" =>"directo",
                                     "email" =>$answer["email"],
                                     "foto" =>$answer["foto"],
-                                    "co_ven" =>$answer["co_ven"]
+                                    "co_ven" =>$answer["co_ven"],
+                                    "rol" =>json_decode($answer["rol"])
                                 );
 
                                 /*=============================================
@@ -104,6 +105,7 @@ class ControllerUsers{
                             "email" =>$answer["email"],
                             "foto" =>$answer["foto"],
                             "perfil" =>$answer["perfil"],
+                            "rol"=>$answer["rol"],
                             "error" => false,
                             "statusCode" => 200,
                         );

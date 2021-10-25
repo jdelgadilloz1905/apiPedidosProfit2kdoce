@@ -3,13 +3,15 @@ require_once "conexion.php";
 
 class ModelClients{
 
-    static public function mdlShowClients($tabla){
+    static public function mdlShowClients($tabla,$data){
 
-        $stmt = Conexion::conectar()->query(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, 
+        $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, 
                                                             (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
                                                             from $tabla c 
-                                                                where c.inactivo =0 
+                                                                where c.inactivo =0 and c.co_ven = :co_ven
                                                                 order by c.co_cli desc");
+
+        $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
 
         $stmt -> execute();
 
@@ -38,7 +40,7 @@ class ModelClients{
 
     static public function mdlGetCuentaXCobrar($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  top 10 c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis, f.saldo  
+        $stmt = Conexion::conectar()->prepare("SELECT  top 10 c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, f.saldo  
                                                             FROM saFacturaVenta f 
                                                             LEFT JOIN saCliente c 
                                                             ON c.co_cli = f.co_cli WHERE f.saldo>0 AND f.co_cli = :co_cli ORDER BY f.co_cli DESC ");
@@ -57,7 +59,7 @@ class ModelClients{
 
     static public function mdlObtenerNotasEntregaXCliente($data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT top 10 c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,v.total_neto saldo
+        $stmt = Conexion::conectar()->prepare("SELECT top 10 c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,v.total_neto saldo
                                                             FROM saNotaEntregaVenta v
                                                                 INNER JOIN saCliente c ON v.co_cli = c.co_cli
                                                                 WHERE v.anulado = 0 AND v.co_cli = :co_cli 

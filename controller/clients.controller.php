@@ -4,11 +4,11 @@ class ControllerClients{
     /*=============================================
     MOSTRAR LOS CLIENTES
     =============================================*/
-    static public function ctrShowClients(){
+    static public function ctrShowClients($data){
 
         $tabla = "saCliente";
 
-        $respuesta = ModelClients::mdlShowClients($tabla);
+        $respuesta = ModelClients::mdlShowClients($tabla,$data);
 
         echo json_encode($respuesta);
 
@@ -111,7 +111,8 @@ class ControllerClients{
                 "observa" => $value["observa"],
                 "fec_emis" => $value["fec_emis"],
                 "total_neto" => $value["total_neto"],
-                "monto_imp" => $value["monto_imp"]
+                "monto_imp" => $value["monto_imp"],
+                "fec_venc"  => $value["fec_emis"],
 
             );
         }

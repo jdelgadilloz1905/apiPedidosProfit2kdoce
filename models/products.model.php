@@ -11,7 +11,26 @@ class ModelProducts{
 
 
         if($item != null){
-            $stmt = Conexion::conectar()->prepare("SELECT  LTRIM(RTRIM(a.co_art)) co_art,a.art_des, c.des_color, ca.cat_des, l.lin_des, u.des_ubicacion, p.des_proc
+            $stmt = Conexion::conectar()->prepare("SELECT  LTRIM(RTRIM(a.co_art)) co_art,a.art_des, c.des_color, ca.cat_des, l.lin_des, u.des_ubicacion, p.des_proc,
+                                                                (select isnull([act], 0) as stock_act
+                                                                    from
+                                                                    ( select
+                                                                        saarticulo.co_art co_art, sum(sastockalmacen.stock) as stock, sastockalmacen.tipo as tipo
+                                                                        from
+                                                                        saarticulo
+                                                                        left join sastockalmacen on saarticulo.co_art = sastockalmacen.co_art
+                                                                        where
+                                                                          saarticulo.co_art = a.co_art
+                                                                        group by
+                                                                        saarticulo.co_art, sastockalmacen.tipo
+                                                                    ) pstockact pivot ( sum(stock) for tipo in ( [act], [lle], [com], [des], [sact], [slle], [scom], [sdes] ) ) 
+                                                                    as pvtstock
+                                                                    left join saartunidad artunidadp on artunidadp.co_art = pvtstock.co_art
+                                                                                                        and artunidadp.uni_principal = 1
+                                                                    left join saunidad unidadp on artunidadp.co_uni = unidadp.co_uni
+                                                                    left join saartunidad artunidads on artunidads.co_art = pvtstock.co_art
+                                                                                                        and artunidads.uni_secundaria = 1
+                                                                    left join saunidad unidads on artunidads.co_uni = unidads.co_uni) stock_actual
                                                         FROM saArticulo a  
                                                             LEFT JOIN saColor c
                                                                 ON a.co_color = c.co_color
@@ -33,7 +52,26 @@ class ModelProducts{
             return $stmt -> fetch(PDO::FETCH_ASSOC);
         }else{
 
-            $stmt = Conexion::conectar()->query("SELECT  LTRIM(RTRIM(a.co_art)) co_art,a.art_des, c.des_color, ca.cat_des, l.lin_des, u.des_ubicacion, p.des_proc
+            $stmt = Conexion::conectar()->query("SELECT  LTRIM(RTRIM(a.co_art)) co_art,a.art_des, c.des_color, ca.cat_des, l.lin_des, u.des_ubicacion, p.des_proc,
+                                                              (select isnull([act], 0) as stock_act
+                                                                    from
+                                                                    ( select
+                                                                        saarticulo.co_art co_art, sum(sastockalmacen.stock) as stock, sastockalmacen.tipo as tipo
+                                                                        from
+                                                                        saarticulo
+                                                                        left join sastockalmacen on saarticulo.co_art = sastockalmacen.co_art
+                                                                        where
+                                                                          saarticulo.co_art = a.co_art
+                                                                        group by
+                                                                        saarticulo.co_art, sastockalmacen.tipo
+                                                                    ) pstockact pivot ( sum(stock) for tipo in ( [act], [lle], [com], [des], [sact], [slle], [scom], [sdes] ) ) 
+                                                                    as pvtstock
+                                                                    left join saartunidad artunidadp on artunidadp.co_art = pvtstock.co_art
+                                                                                                        and artunidadp.uni_principal = 1
+                                                                    left join saunidad unidadp on artunidadp.co_uni = unidadp.co_uni
+                                                                    left join saartunidad artunidads on artunidads.co_art = pvtstock.co_art
+                                                                                                        and artunidads.uni_secundaria = 1
+                                                                    left join saunidad unidads on artunidads.co_uni = unidads.co_uni) stock_actual
                                                         FROM saArticulo a  
                                                             LEFT JOIN saColor c
                                                                 ON a.co_color = c.co_color
@@ -295,7 +333,26 @@ class ModelProducts{
 
     static public function mdlGetFavoriteApi($co_user){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  f.co_user, LTRIM(RTRIM(a.co_art)) co_art,a.art_des, c.des_color, ca.cat_des, l.lin_des, u.des_ubicacion, p.des_proc
+        $stmt = Conexion::conectar()->prepare("SELECT  f.co_user, LTRIM(RTRIM(a.co_art)) co_art,a.art_des, c.des_color, ca.cat_des, l.lin_des, u.des_ubicacion, p.des_proc,
+                                                              (select isnull([act], 0) as stock_act
+                                                                    from
+                                                                    ( select
+                                                                        saarticulo.co_art co_art, sum(sastockalmacen.stock) as stock, sastockalmacen.tipo as tipo
+                                                                        from
+                                                                        saarticulo
+                                                                        left join sastockalmacen on saarticulo.co_art = sastockalmacen.co_art
+                                                                        where
+                                                                          saarticulo.co_art = a.co_art
+                                                                        group by
+                                                                        saarticulo.co_art, sastockalmacen.tipo
+                                                                    ) pstockact pivot ( sum(stock) for tipo in ( [act], [lle], [com], [des], [sact], [slle], [scom], [sdes] ) ) 
+                                                                    as pvtstock
+                                                                    left join saartunidad artunidadp on artunidadp.co_art = pvtstock.co_art
+                                                                                                        and artunidadp.uni_principal = 1
+                                                                    left join saunidad unidadp on artunidadp.co_uni = unidadp.co_uni
+                                                                    left join saartunidad artunidads on artunidads.co_art = pvtstock.co_art
+                                                                                                        and artunidads.uni_secundaria = 1
+                                                                    left join saunidad unidads on artunidads.co_uni = unidads.co_uni) stock_actual
                                                             FROM saFavoritos f 
                                                                 LEFT JOIN saArticulo a  
                                                                     ON a.co_art = f.co_art 
@@ -309,7 +366,7 @@ class ModelProducts{
                                                                     ON a.co_ubicacion = u.co_ubicacion
                                                                 LEFT JOIN saProcedencia p
                                                                     ON a.cod_proc = p.cod_proc
-                                                            WHERE a.anulado = 0 AND a.tipo = 'V' and f.co_user = :co_user order by a.co_art desc   ");
+                                                            WHERE a.anulado = 0 AND a.tipo = 'V' and f.co_user = :co_user order by a.co_art desc");
 
         $stmt -> bindParam(":co_user", $co_user, PDO::PARAM_STR);
 

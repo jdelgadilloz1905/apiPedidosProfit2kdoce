@@ -13,7 +13,7 @@ $method = str_replace("-","",$rutas[1]);
 switch ($method){
 
     case  "all":
-        $respuesta = ControllerClients::ctrShowClients();
+        $respuesta = ControllerClients::ctrShowClients($obj);
         echo $respuesta;
         break;
 
