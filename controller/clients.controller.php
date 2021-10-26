@@ -67,7 +67,7 @@ class ControllerClients{
                 array(
                     "error" => true,
                     "statusCode"=>400,
-                    "cantidad" =>count0,
+                    "cantidad" =>0,
                     "infoDocumentos" =>"No se encontraron registros"
                 ));
 
