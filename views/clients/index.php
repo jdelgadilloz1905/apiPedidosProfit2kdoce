@@ -60,6 +60,14 @@ switch ($method){
 
         break;
 
+    case "cxcvendedor":
+
+        $respuesta = ControllerClients::ctrCuentaXCobrarVendedor($obj);
+
+        echo $respuesta;
+
+        break;
+
     default:
         echo json_encode(
             array(

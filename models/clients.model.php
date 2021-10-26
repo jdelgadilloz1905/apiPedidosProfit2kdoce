@@ -57,6 +57,36 @@ class ModelClients{
         $stmt = null;
     }
 
+    static public function mdlCuentaXCobrarVendedor($data){
+
+        $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
+                                                            (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
+                                                            FROM
+                                                                saDocumentoVenta dc
+                                                                INNER JOIN saTipoDocumento td ON dc.co_tipo_doc = td.co_tipo_doc
+                                                                INNER JOIN saCliente pr ON pr.co_cli = dc.co_cli
+                                                                LEFT JOIN saDescProntoPago dxpp ON dxpp.tip_Cli = pr.tip_Cli
+                                                            WHERE
+                                                                td.usar_ventas = 1
+                                                                AND dc.anulado = 0
+                                                                AND dc.saldo > 0
+                                                                AND dc.co_ven = :co_ven
+                                                            GROUP BY 
+                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli 
+                                                            ORDER BY 
+                                                                dc.co_cli");
+
+        $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
     static public function mdlObtenerNotasEntregaXCliente($data){
 
         $stmt = Conexion::conectar()->prepare("SELECT top 10 c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,v.total_neto saldo

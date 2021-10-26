@@ -49,6 +49,31 @@ class ControllerClients{
         }
     }
 
+    static public function ctrCuentaXCobrarVendedor($obj){
+
+        $respuesta = ModelClients::mdlCuentaXCobrarVendedor($obj);
+
+        if(count($respuesta)>0){
+
+            echo json_encode(
+                array(
+                    "error" => false,
+                    "statusCode"=>200,
+                    "cantidad" =>count($respuesta),
+                    "infoDocumentos" =>$respuesta
+                ));
+        }else{
+            echo json_encode(
+                array(
+                    "error" => true,
+                    "statusCode"=>400,
+                    "cantidad" =>count0,
+                    "infoDocumentos" =>"No se encontraron registros"
+                ));
+
+        }
+    }
+
     static public function ctrObtenerNotasEntregaXCliente($obj){
 
         $respuesta = ModelClients::mdlObtenerNotasEntregaXCliente($obj);
