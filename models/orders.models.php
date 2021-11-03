@@ -133,7 +133,7 @@ class ModelsOrders{
     //DETALLE
     static public function mdlShowOrderReport($valor){
 
-        $stmt = Conexion::conectar()->query("SELECT r.reng_num,r.doc_num,r.co_art,r.co_alma,r.total_art,r.prec_vta,r.total_art total,
+        $stmt = Conexion::conectar()->query("SELECT r.reng_num,r.doc_num,r.co_art,r.co_alma,r.total_art,FORMAT(r.prec_vta,'##,###.00') prec_vta,r.total_art total,
                                                             fecha_reg = '',  a.art_des, descuento =0, stock_prev=0, 
                                                             (SELECT ISNULL([ACT], 0) AS STOCK_ACT
                                                                 FROM

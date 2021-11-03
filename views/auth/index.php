@@ -64,7 +64,7 @@ switch ($method){
         echo $respuesta;
 
         break;
-    case "vendedores":
+    case "vendedores1":
 
         $respuesta = ControllerUsers::ctrShowVendedor();
 

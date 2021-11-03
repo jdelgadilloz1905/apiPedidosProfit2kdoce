@@ -40,7 +40,8 @@ class ModelClients{
 
     static public function mdlGetCuentaXCobrar($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  top 10 c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, f.saldo  
+        $stmt = Conexion::conectar()->prepare("SELECT  top 10 c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, 
+                                                            FORMAT(f.saldo,'##,###.00') saldo
                                                             FROM saFacturaVenta f 
                                                             LEFT JOIN saCliente c 
                                                             ON c.co_cli = f.co_cli WHERE f.saldo>0 AND f.co_cli = :co_cli ORDER BY f.co_cli DESC ");
@@ -89,7 +90,8 @@ class ModelClients{
 
     static public function mdlObtenerNotasEntregaXCliente($data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT top 10 c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,v.total_neto saldo
+        $stmt = Conexion::conectar()->prepare("SELECT top 10 c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,
+                                                            FORMAT(v.total_neto ,'##,###.00') saldo
                                                             FROM saNotaEntregaVenta v
                                                                 INNER JOIN saCliente c ON v.co_cli = c.co_cli
                                                                 WHERE v.anulado = 0 AND v.co_cli = :co_cli 

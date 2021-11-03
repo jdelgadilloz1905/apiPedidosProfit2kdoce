@@ -135,8 +135,8 @@ class ControllerClients{
                 "co_mone" => $value["co_mone"],
                 "observa" => $value["observa"],
                 "fec_emis" => $value["fec_emis"],
-                "total_neto" => $value["total_neto"],
-                "monto_imp" => $value["monto_imp"],
+                "total_neto" => number_format($value["total_neto"], 2, ',', '.'),
+                "monto_imp" => number_format($value["monto_imp"], 2, ',', '.'),
                 "fec_venc"  => $value["fec_emis"],
 
             );
