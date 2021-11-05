@@ -48,8 +48,7 @@ class ModelClients{
                                                             ON c.co_cli = f.co_cli WHERE f.saldo>0 AND f.co_cli = :co_cli ORDER BY f.co_cli DESC ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
-
-
+        
         $stmt -> execute();
 
         return $stmt -> fetchAll(PDO::FETCH_ASSOC);
