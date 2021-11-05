@@ -40,8 +40,9 @@ class ModelClients{
 
     static public function mdlGetCuentaXCobrar($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  top 10 c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, 
-                                                            FORMAT(f.saldo,'##,###.00') saldo
+        $stmt = Conexion::conectar()->prepare("SELECT  c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, 
+                                                            FORMAT(f.saldo,'##,###.00') saldo,
+                                                            case when ISNULL(f.campo1,0) <> '0' then replace(f.campo1,',','.')  else case when f.tasa > 1 then f.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,f.fec_emis, 101)) end  end  as tasa
                                                             FROM saFacturaVenta f 
                                                             LEFT JOIN saCliente c 
                                                             ON c.co_cli = f.co_cli WHERE f.saldo>0 AND f.co_cli = :co_cli ORDER BY f.co_cli DESC ");
@@ -72,6 +73,7 @@ class ModelClients{
                                                                 AND dc.anulado = 0
                                                                 AND dc.saldo > 0
                                                                 AND dc.co_ven = :co_ven
+                                                                AND pr.inactivo =0
                                                             GROUP BY 
                                                                 dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli 
                                                             ORDER BY 
@@ -90,11 +92,11 @@ class ModelClients{
 
     static public function mdlObtenerNotasEntregaXCliente($data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT top 10 c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,
+        $stmt = Conexion::conectar()->prepare("SELECT c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,
                                                             FORMAT(v.total_neto ,'##,###.00') saldo
                                                             FROM saNotaEntregaVenta v
                                                                 INNER JOIN saCliente c ON v.co_cli = c.co_cli
-                                                                WHERE v.anulado = 0 AND v.co_cli = :co_cli 
+                                                                WHERE v.anulado = 0 AND v.co_cli = :co_cli AND v.status <>2 
                                                                 ORDER BY v.doc_num desc ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
@@ -113,7 +115,9 @@ class ModelClients{
 
         try {
 
-            $sql ="EXEC pObtenerDocumentosVenta @sCliente=N'$data[co_cli]'";
+            //$sql ="EXEC pObtenerDocumentosVenta @sCliente=N'$data[co_cli]'";
+
+            $sql ="EXEC pObtenerDocumentosVentaApp @sCliente=N'$data[co_cli]'";
 
             $stmt = Conexion::conectar()->query($sql);
 
