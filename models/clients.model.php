@@ -41,14 +41,14 @@ class ModelClients{
     static public function mdlGetCuentaXCobrar($tabla,$data){
 
         $stmt = Conexion::conectar()->prepare("SELECT  c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, 
-                                                            FORMAT(f.saldo,'##,###.00') saldo,
+                                                            FORMAT(f.saldo/(case when ISNULL(f.campo1,0) <> '0' then replace(f.campo1,',','.')  else case when f.tasa > 1 then f.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,f.fec_emis, 101)) end  end),'##,###.00') saldo,
                                                             case when ISNULL(f.campo1,0) <> '0' then replace(f.campo1,',','.')  else case when f.tasa > 1 then f.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,f.fec_emis, 101)) end  end  as tasa
                                                             FROM saFacturaVenta f 
                                                             LEFT JOIN saCliente c 
                                                             ON c.co_cli = f.co_cli WHERE f.saldo>0 AND f.co_cli = :co_cli ORDER BY f.co_cli DESC ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
-        
+
         $stmt -> execute();
 
         return $stmt -> fetchAll(PDO::FETCH_ASSOC);
@@ -92,7 +92,8 @@ class ModelClients{
     static public function mdlObtenerNotasEntregaXCliente($data){
 
         $stmt = Conexion::conectar()->prepare("SELECT c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,
-                                                            FORMAT(v.total_neto ,'##,###.00') saldo
+                                                            FORMAT(v.total_neto/(case when ISNULL(v.campo1,0) <> '0' then replace(v.campo1,',','.')  else case when v.tasa > 1 then v.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,v.fec_emis, 101)) end  end) ,'##,###.00') saldo,
+                                                            case when ISNULL(v.campo1,0) <> '0' then replace(v.campo1,',','.')  else case when v.tasa > 1 then v.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,v.fec_emis, 101)) end  end  as tasa
                                                             FROM saNotaEntregaVenta v
                                                                 INNER JOIN saCliente c ON v.co_cli = c.co_cli
                                                                 WHERE v.anulado = 0 AND v.co_cli = :co_cli AND v.status <>2 

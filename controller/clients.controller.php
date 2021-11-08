@@ -135,7 +135,7 @@ class ControllerClients{
                 "co_mone" => $value["co_mone"],
                 "observa" => $value["observa"],
                 "fec_emis" => $value["fec_emis"],
-                "total_neto" => number_format($value["saldo"], 2, ',', '.'),
+                "total_neto" => number_format($value["saldo"]/($value["tasa_paralelo"] > 0 ? $value["tasa_paralelo"]: 1), 2, ',', '.'),
                 "monto_imp" => number_format($value["monto_imp"], 2, ',', '.'),
                 "fec_venc"  => $value["fec_emis"],
 

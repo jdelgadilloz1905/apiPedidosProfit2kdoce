@@ -104,7 +104,7 @@ class ModelProducts{
 
         if($item != null){
 
-            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
+            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
 	                                                          FROM saArtPrecio t1
                                                                 JOIN 
                                                                     (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
@@ -129,7 +129,7 @@ class ModelProducts{
 
         }else{
 
-            $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
+            $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
 	                                                          FROM saArtPrecio t1
                                                                 JOIN 
                                                                     (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
