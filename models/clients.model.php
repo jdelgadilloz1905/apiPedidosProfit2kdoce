@@ -5,7 +5,7 @@ class ModelClients{
 
     static public function mdlShowClients($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, 
+        $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
                                                             (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
                                                             from $tabla c 
                                                                 where c.inactivo =0 and c.co_ven = :co_ven
@@ -24,7 +24,7 @@ class ModelClients{
 
     static public function mdlGetClientsLike($tabla,$likess){
 
-        $stmt = Conexion::conectar()->query("SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif,c.tip_cli, 
+        $stmt = Conexion::conectar()->query("SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif,c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
                                                           (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
                                                           from $tabla c where (c.co_cli like '%$likess%' or c.cli_des like '%$likess%' or c.direc1 like '%$likess%' or c.rif like '%$likess%') and c.inactivo =0 
                                                             order by c.co_cli desc ");

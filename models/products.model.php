@@ -104,21 +104,21 @@ class ModelProducts{
 
         if($item != null){
 
-            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
-	                                                          FROM saArtPrecio t1
-                                                                JOIN 
-                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
-		                                                        ON t1.co_precio = t2.co_precio 
-		                                                      WHERE t1.$item = :$item  
-		                                                      ORDER BY t1.co_art, t1.co_precio ASC");
-
-//            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
+//            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
 //	                                                          FROM saArtPrecio t1
 //                                                                JOIN
 //                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
-//		                                                        ON t1.co_precio = t2.co_precio AND t1.desde = t2.desde
+//		                                                        ON t1.co_precio = t2.co_precio
 //		                                                      WHERE t1.$item = :$item
 //		                                                      ORDER BY t1.co_art, t1.co_precio ASC");
+
+            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
+	                                                          FROM saArtPrecio t1
+                                                                JOIN
+                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
+		                                                        ON t1.co_precio = t2.co_precio AND t1.desde = t2.desde
+		                                                      WHERE t1.$item = :$item
+		                                                      ORDER BY t1.co_art, t1.co_precio ASC");
 
             $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
 
@@ -128,13 +128,21 @@ class ModelProducts{
             return $stmt -> fetch(PDO::FETCH_ASSOC);
 
         }else{
+                //tiene la conversion de la tasa sirve para multimoneda
 
-            $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
+//            $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
+//	                                                          FROM saArtPrecio t1
+//                                                                JOIN
+//                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
+//		                                                        ON t1.co_precio = t2.co_precio
+//		                                                        ORDER BY t1.co_art, t1.co_precio ASC ");
+            $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
 	                                                          FROM saArtPrecio t1
                                                                 JOIN 
                                                                     (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
 		                                                        ON t1.co_precio = t2.co_precio 
 		                                                        ORDER BY t1.co_art, t1.co_precio ASC ");
+
 
             $stmt -> execute();
 
