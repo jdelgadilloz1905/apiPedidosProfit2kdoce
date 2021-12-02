@@ -68,9 +68,9 @@ class ControllerProducts{
 
     static public function ctrConsultarPrecioArticulo($data){
 
-        $item = null;
+        $item = $data["item"];
 
-        $valor = null;
+        $valor = $data["valor"];
 
         $respuesta = ModelProducts::mdlConsultarPreciosArticulo($item,$valor);
 
