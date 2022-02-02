@@ -5,13 +5,26 @@ class ModelClients{
 
     static public function mdlShowClients($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
+        if($data["co_ven"] == 99999){
+            $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
+                                                            (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
+                                                            from $tabla c 
+                                                                where c.inactivo =0
+                                                                order by c.co_cli desc");
+
+
+        }else{
+
+            $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
                                                             (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
                                                             from $tabla c 
                                                                 where c.inactivo =0 and c.co_ven = :co_ven
                                                                 order by c.co_cli desc");
 
-        $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+        }
+
+
 
         $stmt -> execute();
 
@@ -60,7 +73,28 @@ class ModelClients{
 
     static public function mdlCuentaXCobrarVendedor($data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
+        if($data["co_ven"] == 99999){
+
+            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
+                                                            (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
+                                                            FROM
+                                                                saDocumentoVenta dc
+                                                                INNER JOIN saTipoDocumento td ON dc.co_tipo_doc = td.co_tipo_doc
+                                                                INNER JOIN saCliente pr ON pr.co_cli = dc.co_cli
+                                                                LEFT JOIN saDescProntoPago dxpp ON dxpp.tip_Cli = pr.tip_Cli
+                                                            WHERE
+                                                                td.usar_ventas = 1
+                                                                AND dc.anulado = 0
+                                                                AND dc.saldo > 0
+                                                                AND pr.inactivo =0
+                                                            GROUP BY 
+                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli 
+                                                            ORDER BY 
+                                                                dc.co_cli");
+
+
+        }else{
+            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
                                                             (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
                                                             FROM
                                                                 saDocumentoVenta dc
@@ -78,7 +112,10 @@ class ModelClients{
                                                             ORDER BY 
                                                                 dc.co_cli");
 
-        $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+        }
+
+
 
         $stmt -> execute();
 

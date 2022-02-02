@@ -104,23 +104,22 @@ class ModelProducts{
 
         if($item != null){
 
-//            $stmt = Conexion::conectar()->prepare("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
-//	                                                          FROM saArtPrecio t1
-//                                                                JOIN
-//                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
-//		                                                        ON t1.co_precio = t2.co_precio
-//		                                                      WHERE t1.$item = :$item
-//		                                                      ORDER BY t1.co_art, t1.co_precio ASC");
-
             $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
-	                                                          FROM saArtPrecio t1
-                                                                JOIN
-                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio WHERE $item = '$valor' GROUP BY co_precio) t2
-		                                                        ON t1.co_precio = t2.co_precio AND t1.desde = t2.desde
-		                                                      WHERE t1.$item = '$valor'
-		                                                      ORDER BY t1.co_art, t1.co_precio ASC");
+                                                FROM saArtPrecio t1
+                                                WHERE t1.$item = '$valor'
+                                                AND t1.Inactivo = 0
+                                                ORDER BY t1.co_art, t1.co_precio ASC");
 
-            //$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+
+            // $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
+            //                                     FROM saArtPrecio t1
+            //                                     JOIN
+            //                                         (SELECT co_precio, MAX(desde) desde FROM saArtPrecio WHERE $item = '$valor' GROUP BY co_precio) t2
+            //                                     ON t1.co_precio = t2.co_precio AND t1.desde = t2.desde
+            //                                     WHERE t1.$item = '$valor'
+            //                                     ORDER BY t1.co_art, t1.co_precio ASC");
+
 
 
             $stmt -> execute();
@@ -128,19 +127,9 @@ class ModelProducts{
             return $stmt -> fetchAll(PDO::FETCH_ASSOC);
 
         }else{
-                //tiene la conversion de la tasa sirve para multimoneda
-
-//            $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, (t1.monto/(select top 1 tasa_v from saTasa where co_mone='US$' order by fecha desc)) AS monto
-//	                                                          FROM saArtPrecio t1
-//                                                                JOIN
-//                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
-//		                                                        ON t1.co_precio = t2.co_precio
-//		                                                        ORDER BY t1.co_art, t1.co_precio ASC ");
             $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
 	                                                          FROM saArtPrecio t1
-                                                                JOIN 
-                                                                    (SELECT co_precio, MAX(desde) desde FROM saArtPrecio GROUP BY co_precio) t2
-		                                                        ON t1.co_precio = t2.co_precio 
+                                                              WHERE t1.Inactivo = 0
 		                                                        ORDER BY t1.co_art, t1.co_precio ASC ");
 
 
@@ -154,6 +143,22 @@ class ModelProducts{
         $stmt -> close();
 
         $stmt = null;
+    }
+
+    static public function mdlConsultarPrecioXTipoCliente($valor,$valor1){
+
+        $stmt = Conexion::conectar()->query("SELECT LTRIM(RTRIM(t1.co_art)) co_art, LTRIM(RTRIM(t1.co_precio)) co_precio, t1.co_alma_calculado, t1.monto
+                                                FROM saArtPrecio t1
+                                                WHERE t1.co_art = '$valor'
+                                                AND t1.co_precio = '$valor1'
+                                                AND t1.Inactivo = 0
+                                                ORDER BY t1.co_art, t1.co_precio ASC");
+
+
+
+        $stmt -> execute();
+
+        return $stmt -> fetch(PDO::FETCH_ASSOC);
     }
     /*=============================================
     STOCK DE LOS PRODUCTOS

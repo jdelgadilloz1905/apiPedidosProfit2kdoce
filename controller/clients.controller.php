@@ -256,7 +256,7 @@ class ControllerClients{
                 array(
                     "error" => false,
                     "statusCode"=>200,
-                    "mensaje" =>"Registro creado exitosamente #".$proximoNumero["Codigo"] +1
+                    "mensaje" =>"Registro creado exitosamente #".substr($data["rif"],1,16)
                 ));
         }else{
             echo json_encode(

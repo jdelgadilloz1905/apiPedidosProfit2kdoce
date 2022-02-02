@@ -83,6 +83,23 @@ class ControllerProducts{
         ));
     }
 
+    static public function ctrConsultarPrecioXTipoCliente($data){
+
+        $valor = $data["valor"];
+
+        $valor1 = $data["valor1"];
+
+        $respuesta = ModelProducts::mdlConsultarPrecioXTipoCliente($valor,$valor1);
+
+        echo json_encode(array(
+            "statusCode" => 200,
+            "error" => false,
+            "total" =>count($respuesta),
+            "infoPrecioArticulo" =>$respuesta,
+            "mensaje" =>""
+        ));
+    }
+
 
     static public function ctrConsultarStockArticulo($obj){
 

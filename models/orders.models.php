@@ -6,8 +6,8 @@ class ModelsOrders{
 
     static public function mdlCreateClientOrder($tabla,$datos, $pedido){
 
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fact_num, co_cli, co_user, tot_neto, cli_des, direc1, rif, telefonos, co_tran, forma_pag,co_sucu) 
-                                                            VALUES (:fact_num, :co_cli, :co_user, :tot_neto, :cli_des, :direc1, :rif, :telefonos, :co_tran, :forma_pag, :co_sucu)");
+        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (fact_num, co_cli, co_user, tot_neto, cli_des, direc1, rif, telefonos, co_tran, forma_pag,co_sucu, id_app) 
+                                                            VALUES (:fact_num, :co_cli, :co_user, :tot_neto, :cli_des, :direc1, :rif, :telefonos, :co_tran, :forma_pag, :co_sucu, :id_app)");
 
 
         $stmt->bindParam(":fact_num", $pedido, PDO::PARAM_STR);
@@ -31,6 +31,8 @@ class ModelsOrders{
         $stmt->bindParam(":forma_pag", $datos["formaPago"], PDO::PARAM_STR);
 
         $stmt->bindParam(":co_sucu", $datos["sucursal"], PDO::PARAM_STR);
+
+        $stmt->bindParam(":id_app", $datos["id_pedido"], PDO::PARAM_STR);
 
         if($stmt->execute()){
 
@@ -191,7 +193,7 @@ class ModelsOrders{
             @sCo_Cta_Ingr_Egr=$datos[sCo_Cta_Ingr_Egr],@sCo_Mone='$datos[sCo_Mone]',@bAnulado=$datos[bAnulado],@sdFec_Reg='$datos[sdFec_Reg]',@sdFec_Venc='$datos[sdFec_Venc]',@sStatus='$datos[sStatus]',@deTasa=$datos[deTasa],@sN_Control=$datos[sN_Control],@sPorc_Desc_Glob=$datos[sPorc_Desc_Glob],@deMonto_Desc_Glob=$datos[deMonto_Desc_Glob],
             @sPorc_Reca=$datos[sPorc_Reca],@deMonto_Reca=$datos[deMonto_Reca],@deSaldo=$datos[deSaldo],@deTotal_Bruto=$datos[deTotal_Bruto],@deMonto_Imp=$datos[deMonto_Imp],@deMonto_Imp3=$datos[deMonto_Imp3],@deOtros1=$datos[deOtros1],@deOtros2=$datos[deOtros2],@deOtros3=$datos[deOtros3],@deMonto_Imp2=$datos[deMonto_Imp2],
             @deTotal_Neto=$datos[deTotal_Neto],@sComentario='$datos[sComentario]',@sDir_Ent=$datos[sDir_Ent],@bContrib=$datos[bContrib],@bImpresa=$datos[bImpresa],@sSalestax=$datos[sSalestax],@sImpfis=$datos[sImpfis],@sImpfisfac=$datos[sImpfisfac],@bVen_Ter=$datos[bVen_Ter],@sDis_Cen=$datos[sDis_Cen],@sCampo1=$datos[sCampo1],
-            @sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],@sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6], @sCampo7=$datos[sCampo7],@sCampo8=$datos[sCampo8],@sRevisado=$datos[sRevisado],@sTrasnfe=$datos[sTrasnfe],@sco_sucu_in=$datos[sco_sucu_in],@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
+            @sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],@sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6], @sCampo7=$datos[sCampo7],@sCampo8='$datos[sCampo8]',@sRevisado=$datos[sRevisado],@sTrasnfe=$datos[sTrasnfe],@sco_sucu_in=$datos[sco_sucu_in],@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
 
             $stmt = Conexion::conectar()->query($sql);
 
@@ -255,6 +257,19 @@ class ModelsOrders{
                                                         CASE WHEN status=2 THEN 'Procesado' END END END) AS estatus 
                                                             from saPedidoVenta  
                                                             where doc_num = '".$fact_num."' ");
+
+        $stmt -> execute();
+
+        return $stmt -> fetch(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    static public function mdlFindOrderIdApp($idPedido){
+
+        $stmt = Conexion::conectar()->query("select *from saPedidoVenta where campo8 = '".$idPedido."' ");
 
         $stmt -> execute();
 

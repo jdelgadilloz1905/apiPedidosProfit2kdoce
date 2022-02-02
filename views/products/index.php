@@ -22,6 +22,12 @@ switch ($method){
         echo $respuesta;
         break;
 
+    case "buscarpreciotipocliente":
+
+        $respuesta = ControllerProducts::ctrConsultarPrecioXTipoCliente($obj);
+        echo $respuesta;
+        break;
+
     case  "unidadproducto":
 
         $respuesta = ControllerProducts::ctrConsultarUnidadArticulo($obj);
