@@ -18,6 +18,14 @@ switch ($method){
         
         break;
 
+    case "changeuser":
+
+        $respuesta = ControllerUsers::ctrUpdateUser($obj);
+
+        echo $respuesta;
+
+        break;
+
     case "changename":
 
         $respuesta = ControllerUsers::ctrUpdateName($obj);

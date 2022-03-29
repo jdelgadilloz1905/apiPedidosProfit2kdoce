@@ -5,8 +5,12 @@ class Conexion{
 	static public function conectar(){
 
         try {
-            $link = new PDO("sqlsrv:server=localhost;database=SATVICOS_A", "profit","profit" );
-            $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $link = new PDO("mysql:host=localhost;dbname=app_movil",
+                "root",
+                "",
+                array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+            );
         } catch (Exception $e) {
             $link= "Ocurrió un error con la base de datos: " . $e->getMessage();
         }
@@ -17,7 +21,7 @@ class Conexion{
     static public function conectarMasterProfit(){
 
         try {
-            $link = new PDO("sqlsrv:server=localhost;database=MasterProfit", "profit","profit" );
+            $link = new PDO("mysql:host=localhost;database=MasterProfit", "profit","profit" );
             $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (Exception $e) {
             $link= "Ocurrió un error con la base de datos: " . $e->getMessage();

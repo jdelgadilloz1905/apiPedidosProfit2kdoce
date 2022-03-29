@@ -13,13 +13,25 @@ class ControllerProducts{
 
         $respuesta = ModelProducts::mdlShowProducts($item,$valor);
 
-        echo json_encode(array(
-            "statusCode" => 200,
-            "error" => false,
-            "total" =>count($respuesta),
-            "infoProduct" =>$respuesta,
-            "mensaje" =>""
-        ));
+        if(count($respuesta)>0){
+
+            $json =array(
+                "statusCode" => "200",
+                "mensaje"=>"",
+                "total" =>count($respuesta),
+                "infoProduct" =>$respuesta
+            );
+
+
+        }else{
+            $json =array(
+                "statusCode" => "404",
+                "mensaje"=>"No hay registros",
+                "infoProduct" =>""
+            );
+        }
+
+        echo json_encode($json,http_response_code($json["statusCode"]));
 
     }
 
@@ -68,11 +80,28 @@ class ControllerProducts{
 
     static public function ctrConsultarPrecioArticulo($data){
 
-        $item = null;
+        $item = $data["item"];
 
-        $valor = null;
+        $valor = $data["valor"];
 
         $respuesta = ModelProducts::mdlConsultarPreciosArticulo($item,$valor);
+
+        echo json_encode(array(
+            "statusCode" => 200,
+            "error" => false,
+            "total" =>count($respuesta),
+            "infoPrecioArticulo" =>$respuesta,
+            "mensaje" =>""
+        ));
+    }
+
+    static public function ctrConsultarPrecioXTipoCliente($data){
+
+        $valor = $data["valor"];
+
+        $valor1 = $data["valor1"];
+
+        $respuesta = ModelProducts::mdlConsultarPrecioXTipoCliente($valor,$valor1);
 
         echo json_encode(array(
             "statusCode" => 200,

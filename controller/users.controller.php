@@ -6,121 +6,91 @@ class ControllerUsers{
     static public function ctrLoginUser($data){
 
         if(isset($data["identifier"])){
-            if($data["modo"] == "directo"){
-                if(preg_match('/^[a-zA-Z0-9.,]+$/', $data["password"])){
 
-                    $encrypt = crypt($data["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+            if(preg_match('/^[a-zA-Z0-9.,]+$/', $data["password"])){
 
-                    $table = "usuarios";
+                $encrypt = crypt($data["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
-                    $item = "email";
+                $table = "usuarios";
 
-                    $item2 = "usuario";
+                $item = "email";
 
-                    $value = $data["identifier"];
+                $item2 = "usuario";
 
-                    $answer = ModelUsers::mdlShowUsers($table,$item,$value,$item2);
+                $value = $data["identifier"];
 
-                    if(isset($answer["email"])){
+                $answer = ModelUsers::mdlShowUsers($table,$item,$value,$item2);
 
-                        if(($answer["email"] == $value or $answer["usuario"] == $value) && $answer["password"] == $encrypt){
+                if(isset($answer["email"])){
 
-                            if($answer["estado"] == 1){
+                    if(($answer["email"] == $value or $answer["usuario"] == $value) && $answer["password"] == $encrypt){
 
-                                $resultado = array(
-                                    "id" =>$answer["id"],
-                                    "usuario" =>$answer["usuario"],
-                                    "nombre" =>$answer["nombre"],
-                                    "apellido" =>$answer["apellido"],
-                                    "modo" =>"directo",
-                                    "email" =>$answer["email"],
-                                    "foto" =>$answer["foto"],
-                                    "co_ven" =>$answer["co_ven"],
-                                    "rol" =>json_decode($answer["rol"])
-                                );
+                        if($answer["estado"] == 1){
 
-                                /*=============================================
-                                REGISTRAR FECHA PARA SABER EL ÚLTIMO LOGIN
-                                =============================================*/
+                            /*=============================================
+                            REGISTRAR FECHA PARA SABER EL ÚLTIMO LOGIN
+                            =============================================*/
 
-                                //self::ctrUpdateLastLogin($table,$answer["id"]);
+                            self::ctrUpdateLastLogin("usuarios",$answer["id"]);
 
-                                echo json_encode(array(
-                                    "statusCode" => 200,
-                                    "error" => false,
-                                    "infoUser" =>$resultado,
-                                    "mensaje" =>""
-                                ));
+                            $resultado = array(
+                                "id" =>$answer["id"],
+                                "usuario" =>$answer["usuario"],
+                                "nombre" =>$answer["nombre"],
+                                "modo" =>"directo",
+                                "email" =>$answer["email"],
+                                "foto" =>$answer["foto"],
+                                "co_ven" =>$answer["co_ven"]
+                            );
 
+                            /*=============================================
+                            REGISTRAR FECHA PARA SABER EL ÚLTIMO LOGIN
+                            =============================================*/
 
-                            }else{
+                            //self::ctrUpdateLastLogin($table,$answer["id"]);
 
-                                echo json_encode(array(
-                                    "statusCode" => 400,
-                                    "error" => true,
-                                    "mensaje" =>"El email ó usuario aún no está activado"
-                                ));
+                            $json = array(
+                                "statusCode" => 200,
+                                "infoUser" =>$resultado,
+                                "mensaje" =>""
+                            );
 
-                            }
+                            echo json_encode($json,http_response_code($json["statusCode"]));
+
 
                         }else{
 
-                            echo json_encode(array(
-                                "statusCode" => 400,
-                                "error" => true,
-                                "mensaje" =>"Usuario o clave invalida"
-                            ));
+                            $json = array(
+                                "statusCode" => 404,
+                                "mensaje" =>"El email ó usuario aún no está activado"
+                            );
+
+                            echo json_encode($json,http_response_code($json["statusCode"]));
 
                         }
+
                     }else{
-                        echo json_encode(array(
-                            "statusCode" => 400,
-                            "error" => true,
-                            "mensaje" =>"Usuario no existe  "
-                        ));
 
-                    }
-
-
-                }
-            }else{
-                if(preg_match('/^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/', $data["identifier"])){
-
-                    $table = "usuarios";
-
-                    $item = "email";
-
-                    $item2 = "usuario";
-
-                    $value = $data["identifier"];
-
-                    $answer = ModelUsers::mdlShowUsers($table,$item,$value, $item2);
-
-                    if($answer["email"] == $value){
-
-                        $resultado = array(
-                            "id" =>$answer["id"],
-                            "nombre" =>$answer["nombre"],
-                            "modo" =>$answer["modo"],
-                            "email" =>$answer["email"],
-                            "foto" =>$answer["foto"],
-                            "perfil" =>$answer["perfil"],
-                            "rol"=>$answer["rol"],
-                            "error" => false,
-                            "statusCode" => 200,
+                        $json= array(
+                            "statusCode" => 404,
+                            "mensaje" =>"Usuario o clave invalida"
                         );
+                        echo json_encode($json,http_response_code($json["statusCode"]));
 
-                        echo json_encode(array(
-                            "statusCode" => 200,
-                            "error" => false,
-                            "data" =>$resultado
-                        ));
 
                     }
-
+                }else{
+                    $json = array(
+                        "statusCode" => 404,
+                        "mensaje" =>"Usuario no existe  "
+                    );
+                    echo json_encode($json,http_response_code($json["statusCode"]));
 
                 }
+
+
             }
+
 
         }
     }
@@ -294,21 +264,21 @@ class ControllerUsers{
 
         if($resp == "ok"){
 
-            echo json_encode(array(
+            $json =array(
                 "statusCode" => 200,
-                "error" => false,
                 "mensaje" =>"Tu contraseña ha sido cambiada exitosamente."
-            ));
+            );
 
         }else{
 
-            echo json_encode(array(
-                "statusCode" => 400,
-                "error" => true,
+            $json =array(
+                "statusCode" => 404,
                 "mensaje" =>"¡Error al cambiar su contraseña, contacte con el administrador!"
-            ));
+            );
 
         }
+
+        echo json_encode($json,http_response_code($json["statusCode"]));
 
     }
 
@@ -320,15 +290,10 @@ class ControllerUsers{
 
         $encriptar = crypt($data["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
-        //busco los datos del vendedor
-        $datoVendedor = ModelUsers::mdlShowUserProfit("saVendedor","co_ven",$data["co_ven"]);
-
-        //busco el ultimo id generado
-        $codigo = ModelsConfig::mdlCorrelativoUsuario("usuarios","id");
-
+        $datoVendedor = ModelUsers::mdlShowUserProfit("vendedores","co_ven",$data["co_ven"]);
 
         $datos = array(
-            "id" => isset($codigo["codigo"]) ? $codigo["codigo"] : 1,
+
             "email" => $data["email"],
             "usuario" => $data["username"],
             "nombre" => $datoVendedor["ven_des"],
@@ -344,11 +309,13 @@ class ControllerUsers{
         //echo json_encode(array("datos"=>$datos));
         if(isset($result["email"])){
 
-            echo json_encode(array(
-                "statusCode" => 400,
-                "error" => true,
+            $json = array(
+                "statusCode" => 404,
+                "datos" =>"",
                 "mensaje" =>"¡El correo electrónico y/o usuario ya existe.",
-            ));
+            );
+
+            echo json_encode($json,http_response_code($json["statusCode"]));
 
         }else{
             $tabla = "usuarios";
@@ -357,20 +324,23 @@ class ControllerUsers{
 
             if($respuesta == "ok"){
 
-                echo json_encode(array(
+                $json = array(
                     "statusCode" => 200,
-                    "error" => false,
                     "datos"=>$datos,
                     "mensaje" =>"¡Excelente trabajo " . $data["username"],
-                ));
+                );
+
+                echo json_encode($json,http_response_code($json["statusCode"]));
+
             }else{
 
-                echo json_encode(array(
-                    "statusCode" => 400,
-                    "error" => true,
+                $json = array(
+                    "statusCode" => 404,
                     "datos"=>$datos,
                     "mensaje" =>"¡Error registrando el usuario, contacte al administrador ",
-                ));
+                );
+
+                echo json_encode($json,http_response_code($json["statusCode"]));
             }
         }
 
@@ -436,27 +406,43 @@ class ControllerUsers{
         }
     }
 
-    static public function ctrUpdateName($data){
+    static public function ctrUpdateUser($data){
 
-        $respuesta = ModelUsers::mdlUpdateName("usuarios",$data);
+        if($data["item"] != "nombre"){
+            $result = ModelUsers::mdlShowUser("usuarios",$data["item"],$data["valor"]);
+            if(isset($result["id"])){
+                $json =array(
+                    "statusCode" => "404",
+                    "mensaje"=>"El ".$data["item"] ." no esta disponible.",
+                    "infoUser" =>""
+                );
+                echo json_encode($json,http_response_code($json["statusCode"]));
+                return;
+            }
+
+        }
+        $respuesta = ModelUsers::mdlUpdateUser("usuarios",$data["item"],$data["valor"],"id",$data["id"]);
 
         if($respuesta == "ok")
         {
-            echo json_encode(array(
+            $json =array(
                 "statusCode" => 200,
-                "error" => false,
+                "mensaje" =>"Registro actualizado con exito",
                 "infoUser" =>ModelUsers::mdlShowUser("usuarios","id",$data["id"])
-            ));
+            );
+            echo json_encode($json,http_response_code($json["statusCode"]));
+
         }else{
-            echo json_encode(array(
-                "statusCode" => 400,
-                "error" => true,
+            $json= array(
+                "statusCode" => 404,
+                "mensaje" =>"Error actualizando registro",
                 "infoUser" =>$respuesta
-            ));
+            );
+
+            echo json_encode($json,http_response_code($json["statusCode"]));
         }
 
 
-        //echo $respuesta;
     }
 
     static public function ctrUpdateEmail($data){
@@ -525,13 +511,17 @@ class ControllerUsers{
 
     static public function ctrShowVendedor(){
 
-        $respuesta = ModelUsers::mdlShowVendedor("saVendedor");
+        $respuesta = ModelUsers::mdlShowVendedor("vendedores");
 
-        echo json_encode(array(
+        $json = array(
             "statusCode" => 200,
-            "error" => false,
+            "mensaje" => "",
             "infoVen" =>$respuesta
-        ));
+        );
+
+        echo json_encode($json,http_response_code($json["statusCode"]));
+
+
     }
 
     /*=============================================
