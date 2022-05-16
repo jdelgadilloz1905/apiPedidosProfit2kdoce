@@ -5,13 +5,26 @@ class ModelClients{
 
     static public function mdlShowClients($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, 
+        if($data["co_ven"] == 99999){
+            $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
+                                                            (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
+                                                            from $tabla c 
+                                                                where c.inactivo =0
+                                                                order by c.co_cli desc");
+
+
+        }else{
+
+            $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
                                                             (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
                                                             from $tabla c 
                                                                 where c.inactivo =0 and c.co_ven = :co_ven
                                                                 order by c.co_cli desc");
 
-        $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+        }
+
+
 
         $stmt -> execute();
 
@@ -24,7 +37,7 @@ class ModelClients{
 
     static public function mdlGetClientsLike($tabla,$likess){
 
-        $stmt = Conexion::conectar()->query("SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif,c.tip_cli, 
+        $stmt = Conexion::conectar()->query("SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif,c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
                                                           (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
                                                           from $tabla c where (c.co_cli like '%$likess%' or c.cli_des like '%$likess%' or c.direc1 like '%$likess%' or c.rif like '%$likess%') and c.inactivo =0 
                                                             order by c.co_cli desc ");
@@ -60,7 +73,28 @@ class ModelClients{
 
     static public function mdlCuentaXCobrarVendedor($data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
+        if($data["co_ven"] == 99999){
+
+            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
+                                                            (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
+                                                            FROM
+                                                                saDocumentoVenta dc
+                                                                INNER JOIN saTipoDocumento td ON dc.co_tipo_doc = td.co_tipo_doc
+                                                                INNER JOIN saCliente pr ON pr.co_cli = dc.co_cli
+                                                                LEFT JOIN saDescProntoPago dxpp ON dxpp.tip_Cli = pr.tip_Cli
+                                                            WHERE
+                                                                td.usar_ventas = 1
+                                                                AND dc.anulado = 0
+                                                                AND dc.saldo > 0
+                                                                AND pr.inactivo =0
+                                                            GROUP BY 
+                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli 
+                                                            ORDER BY 
+                                                                dc.co_cli");
+
+
+        }else{
+            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
                                                             (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
                                                             FROM
                                                                 saDocumentoVenta dc
@@ -78,7 +112,10 @@ class ModelClients{
                                                             ORDER BY 
                                                                 dc.co_cli");
 
-        $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+        }
+
+
 
         $stmt -> execute();
 
@@ -180,9 +217,9 @@ class ModelClients{
 
             $sql="exec pInsertarCliente @sCo_Cli='$datos[sCo_Cli]',@sCli_Des='$datos[sCli_Des]',@sCo_Seg='$datos[sCo_Seg]',@sCo_Zon='$datos[sCo_Zon]',@sSalesTax=$datos[sSalesTax],@sLogin=$datos[sLogin],@binactivo=$datos[binactivo],@blunes=$datos[blunes],
             @bmartes=$datos[bmartes],@bmiercoles=$datos[bmiercoles],@bjueves=$datos[bjueves],@bviernes=$datos[bviernes], @bsabado=$datos[bsabado],@bdomingo=$datos[bdomingo],@bcontrib=$datos[bcontrib],@bvalido=$datos[bvalido],@bsincredito=$datos[bsincredito],@sDirec1='$datos[sDirec1]',
-            @sDirec2='$datos[sDirec2]',@stelefonos='$datos[stelefonos]',@sfax=$datos[sfax],@sRespons='$datos[sRespons]',@sdfecha_reg='$datos[sdfecha_reg]',@stip_cli='$datos[stip_cli]',@demont_cre=$datos[demont_cre],@iplaz_pag=$datos[iplaz_pag],@iId=$datos[iId], @iPuntaje=$datos[iPuntaje],@dedesc_ppago=$datos[dedesc_ppago],@dedesc_glob=$datos[dedesc_glob],
-            @srif='$datos[srif]',@sdis_cen=$datos[sdis_cen],@snit=$datos[snit],@sco_cta_ingr_egr='$datos[sco_cta_ingr_egr]',@scomentario=$datos[scomentario],@bjuridico=$datos[bjuridico],@itipo_adi=$datos[itipo_adi],@smatriz=$datos[smatriz],@sco_tab=$datos[sco_tab],@stipo_per=$datos[stipo_per],@sco_pais='$datos[sco_pais]',
-            @sciudad=$datos[sciudad],@szip=$datos[szip],@sWebSite=$datos[sWebSite],@bcontribu_e=$datos[bcontribu_e],@brete_regis_doc=$datos[brete_regis_doc],@deporc_esp=$datos[deporc_esp],@spassword=$datos[spassword],@sestado=$datos[sestado],@sserialp=$datos[sserialp],@semail='$datos[semail]',@sdir_ent2=$datos[sdir_ent2],@sfrecu_vist=$datos[sfrecu_vist],
+            @sDirec2=$datos[sDirec2],@stelefonos='$datos[stelefonos]',@sfax=$datos[sfax],@sRespons='$datos[sRespons]',@sdfecha_reg='$datos[sdfecha_reg]',@stip_cli='$datos[stip_cli]',@demont_cre=$datos[demont_cre],@iplaz_pag=$datos[iplaz_pag],@iId=$datos[iId], @iPuntaje=$datos[iPuntaje],@dedesc_ppago=$datos[dedesc_ppago],@dedesc_glob=$datos[dedesc_glob],
+            @srif='$datos[srif]',@sdis_cen=$datos[sdis_cen],@snit=$datos[snit],@sco_cta_ingr_egr='$datos[sco_cta_ingr_egr]',@scomentario='$datos[scomentario]',@bjuridico=$datos[bjuridico],@itipo_adi=$datos[itipo_adi],@smatriz=$datos[smatriz],@sco_tab=$datos[sco_tab],@stipo_per=$datos[stipo_per],@sco_pais='$datos[sco_pais]',
+            @sciudad='$datos[sciudad]',@szip=$datos[szip],@sWebSite=$datos[sWebSite],@bcontribu_e=$datos[bcontribu_e],@brete_regis_doc=$datos[brete_regis_doc],@deporc_esp=$datos[deporc_esp],@spassword=$datos[spassword],@sestado=$datos[sestado],@sserialp=$datos[sserialp],@semail='$datos[semail]',@sdir_ent2='$datos[sdir_ent2]',@sfrecu_vist=$datos[sfrecu_vist],
             @shorar_caja=$datos[shorar_caja],@sco_ven='$datos[sco_ven]', @sco_mone='$datos[sco_mone]',@scond_pag='$datos[scond_pag]',@sTComp=$datos[sTComp],@sN_db=$datos[sN_db],@sN_cr=$datos[sN_cr],@semail_alterno=$datos[semail_alterno],@sCampo1=$datos[sCampo1],@sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],
             @sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6],@sCampo7=$datos[sCampo7],@sCampo8=$datos[sCampo8],@sRevisado=$datos[sRevisado], @sTrasnfe=$datos[sTrasnfe],@sco_sucu_in='$datos[sco_sucu_in]',@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
 

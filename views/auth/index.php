@@ -72,6 +72,14 @@ switch ($method){
 
         break;
 
+    case "registervendedor":     
+
+        $respuesta = ControllerUsers::ctrRegisterVendedor($obj);
+
+        echo $respuesta;
+
+        break;
+
     default:
         echo json_encode(
             array(

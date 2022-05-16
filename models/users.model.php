@@ -233,15 +233,162 @@ class ModelUsers{
 
     static public function mdlShowVendedor($tabla){
 
-        $stmt = Conexion::conectar()->prepare("SELECT co_ven as value,ven_des as label FROM $tabla where co_ven not in(select MasterProfit..usuarios.co_ven from  MasterProfit..usuarios) order by co_ven");
+        try {
 
-        $stmt -> execute();
+            $stmt = Conexion::conectar()->prepare("SELECT co_ven as value,ven_des as label FROM $tabla");
 
-        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+            $stmt -> execute();
+
+            return $response = array(
+                "status"=>200,
+                "result"=>$stmt -> fetchAll(PDO::FETCH_ASSOC),
+                "comment" => ""
+            );
+
+            $stmt -> close();
+
+            $stmt = null;
+                
+        } catch (\Throwable $th) {
+
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+        );
+        }
+
+        
+    }
+
+    /*=============================================
+    MOSTRAR REGISTROS 
+    =============================================*/
+
+    static public function mdlShowRegister($tabla, $item, $valor){
+
+        if($item != null){
+
+            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
+
+            $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+
+            $stmt -> execute();
+
+            return $stmt -> fetch();
+
+        }else{
+
+            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla ORDER BY id DESC ");
+
+            $stmt -> execute();
+
+            return $stmt -> fetchAll();
+
+        }
+
 
         $stmt -> close();
 
         $stmt = null;
+
     }
+
+    /*=============================================
+    REGISTRAR DATOS  
+    =============================================*/
+    static public function mdlRegisterVendedor($table, $data){
+
+        try {
+            $columns = "";
+            $params="";
+            foreach ($data as $key => $value){
+
+                $columns .=$key.",";
+                $params .=":".$key.",";
+            }
+            $columns = substr($columns, 0, -1);
+            $params = substr($params, 0, -1);
+
+            $link = Conexion::conectar();
+            $sql = "INSERT INTO $table ($columns) VALUES ($params )";
+
+            $stmt = $link->prepare($sql);
+
+            foreach ($data as $key => $value){
+
+                $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
+            }
+
+            if($stmt->execute()){        
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>$link->lastInsertId(),
+                    "comment" => "El proceso fue exitoso"
+                );
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+            }
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                    "status"=>500,
+                    "result"=>$th,
+                    "comment" => "Fallo el proceso"
+            );
+        }
+                   
+    }
+
+    static public function mdlUpdateVendedor($tabl1e,$data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET ven_des = :ven_des WHERE co_ven = :co_ven");
+
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":ven_des", $data["ven_des"], PDO::PARAM_STR);
+
+
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            $stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+        );
+        }
+    }
+
 
 }

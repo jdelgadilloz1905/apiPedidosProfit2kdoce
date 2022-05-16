@@ -525,13 +525,24 @@ class ControllerUsers{
 
     static public function ctrShowVendedor(){
 
-        $respuesta = ModelUsers::mdlShowVendedor("saVendedor");
+        $respuesta = ModelUsers::mdlShowVendedor("vendedores");
 
-        echo json_encode(array(
-            "statusCode" => 200,
-            "error" => false,
-            "infoVen" =>$respuesta
-        ));
+        echo json_encode($respuesta,http_response_code($respuesta["status"]));
+    }
+
+    static public function ctrRegisterVendedor($data){
+        
+        $respuesta = ModelUsers::mdlShowRegister("vendedores", "co_ven", $data["co_ven"]);
+
+        if(isset($respuesta["id"])){
+            //update
+            $result = ModelUsers::mdlUpdateVendedor("vendedores",$data);
+        }else{
+            //register
+            $result = ModelUsers::mdlRegisterVendedor("vendedores", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+            
     }
 
     /*=============================================
