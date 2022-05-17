@@ -509,4 +509,125 @@ class ModelProducts{
 
         $stmt = null;
     }
+
+
+    /*CONSULTAS DEL SERVIDOR DE PROFIT  */
+
+    /*=============================================
+    REGISTRAR DATOS  
+    =============================================*/
+    static public function mdlRegisterProducto($table, $data){
+
+        try {
+            $columns = "";
+            $params="";
+            foreach ($data as $key => $value){
+
+                $columns .=$key.",";
+                $params .=":".$key.",";
+            }
+            $columns = substr($columns, 0, -1);
+            $params = substr($params, 0, -1);
+
+            $link = Conexion::conectar();
+            $sql = "INSERT INTO $table ($columns) VALUES ($params )";
+
+            $stmt = $link->prepare($sql);
+
+            foreach ($data as $key => $value){
+
+                $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
+            }
+
+            if($stmt->execute()){        
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>$link->lastInsertId(),
+                    "comment" => "El proceso fue exitoso"
+                );
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+            }
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                    "status"=>500,
+                    "result"=>$th,
+                    "comment" => "Fallo el proceso"
+            );
+        }
+                   
+    }
+
+    static public function mdlUpdateProducto($table,$data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET art_des = :art_des, des_color = :des_color, cat_des = :cat_des, lin_des = :lin_des,
+                                                                     des_ubicacion = :des_ubicacion, des_proc = :des_proc, stock_actual = :stock_actual 
+                                                                     WHERE co_art = :co_art");
+
+            $stmt -> bindParam(":co_art", $data["co_art"], PDO::PARAM_STR);
+            $stmt -> bindParam(":art_des", $data["art_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":des_color", $data["des_color"], PDO::PARAM_STR);
+            $stmt -> bindParam(":cat_des", $data["cat_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":lin_des", $data["lin_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":des_ubicacion", $data["des_ubicacion"], PDO::PARAM_STR);
+            $stmt -> bindParam(":des_proc", $data["des_proc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":stock_actual", $data["stock_actual"], PDO::PARAM_STR);
+            
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (Exception $e) {
+
+            return $response = array(
+                "status"=>500,
+                "result"=>$e->getMessage(),
+                "comment" => "Fallo el proceso"
+            );
+        }
+    }
+
+    static public function mdlShowProductsApp($data)
+    {
+        $stmt = Conexion::conectar()->prepare(" SELECT * from productos where co_art = :co_art");
+
+        $stmt -> bindParam(":co_art", $data["co_art"], PDO::PARAM_STR);
+
+        $stmt -> execute();
+
+        return $stmt -> fetch(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
 }

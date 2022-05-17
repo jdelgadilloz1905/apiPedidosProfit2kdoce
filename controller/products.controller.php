@@ -23,6 +23,21 @@ class ControllerProducts{
 
     }
 
+    static public function ctrRegistrarProductoApp($data){
+
+
+        $respuesta = ModelProducts::mdlShowProductsApp($data);
+        
+        if(isset($respuesta["id"])){
+            
+            $result = ModelProducts::mdlUpdateProducto("productos",$data);
+        }else{
+            $result = ModelProducts::mdlRegisterProducto("productos", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
+    }
+
     /*=============================================
       GET PRODUCTOS DE FAVORITOS
       =============================================*/

@@ -267,4 +267,49 @@ class ControllerClients{
                 ));
         }
     }
+
+
+    /*DESDE PROFIT  */
+    static public function ctrRegistrarClienteApp($data){
+
+        $respuesta = ModelClients::mdlShowFileApp("clientes","co_cli", $data["co_cli"]);
+        
+        if(isset($respuesta["id"])){
+            
+            $result = ModelClients::mdlUpdateCliente("clientes",$data);
+        }else{
+            $result = ModelClients::mdlRegisterFile("clientes", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
+
+    }
+
+    static public function ctrRegistrarTransporteApp($data){
+        
+        $respuesta = ModelClients::mdlShowFileApp("transporte","co_tran", $data["co_tran"]);
+        
+        if(isset($respuesta["id"])){
+            
+            $result = ModelClients::mdlUpdateTransporte("transporte",$data);
+        }else{
+            $result = ModelClients::mdlRegisterFile("transporte", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
+    }
+
+    static public function ctrRegistrarCondicioApp($data){
+        
+        $respuesta = ModelClients::mdlShowFileApp("condicion_pago","co_cond", $data["co_cond"]);
+        
+        if(isset($respuesta["id"])){
+            
+            $result = ModelClients::mdlUpdateCondicio("condicion_pago",$data);
+        }else{
+            $result = ModelClients::mdlRegisterFile("condicion_pago", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
+    }
 }

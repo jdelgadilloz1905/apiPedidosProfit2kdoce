@@ -34,6 +34,211 @@ class ModelClients{
 
         $stmt = null;
     }
+    
+    static public function mdlShowFileApp($table, $item, $valor)
+    {
+        $stmt = Conexion::conectar()->prepare(" SELECT * from $table where $item = :$item");
+
+        $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+        $stmt -> execute();
+
+        return $stmt -> fetch(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    /*=============================================
+    REGISTRAR DATOS  
+    =============================================*/
+    static public function mdlRegisterFile($table, $data){
+
+        try {
+            $columns = "";
+            $params="";
+            foreach ($data as $key => $value){
+
+                $columns .=$key.",";
+                $params .=":".$key.",";
+            }
+            $columns = substr($columns, 0, -1);
+            $params = substr($params, 0, -1);
+
+            $link = Conexion::conectar();
+            $sql = "INSERT INTO $table ($columns) VALUES ($params )";
+
+            $stmt = $link->prepare($sql);
+
+            foreach ($data as $key => $value){
+
+                $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
+            }
+
+            if($stmt->execute()){        
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>$link->lastInsertId(),
+                    "comment" => "El proceso fue exitoso"
+                );
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+            }
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                    "status"=>500,
+                    "result"=>$th,
+                    "comment" => "Fallo el proceso"
+            );
+        }
+                   
+    }
+
+    static public function mdlUpdateCliente($table,$data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET cli_des = :cli_des, direc1 = :direc1, rif = :rif, co_ven = :co_ven,
+                                                                     telefonos = :telefonos, tip_cli = :tip_cli, cond_pag = :cond_pag,
+                                                                     cond_des = :cond_des,tipo_precio = :tipo_precio WHERE co_cli = :co_cli");
+
+            $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
+            $stmt -> bindParam(":cli_des", $data["cli_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":direc1", $data["direc1"], PDO::PARAM_STR);
+            $stmt -> bindParam(":rif", $data["rif"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":telefonos", $data["telefonos"], PDO::PARAM_STR);
+            $stmt -> bindParam(":tip_cli", $data["tip_cli"], PDO::PARAM_STR);
+            $stmt -> bindParam(":cond_pag", $data["cond_pag"], PDO::PARAM_STR);
+            $stmt -> bindParam(":cond_des", $data["cond_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":tipo_precio", $data["tipo_precio"], PDO::PARAM_STR);
+            
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (Exception $e) {
+
+            return $response = array(
+                "status"=>500,
+                "result"=>$e->getMessage(),
+                "comment" => "Fallo el proceso"
+            );
+        }
+    }
+
+    static public function mdlUpdateTransporte($table,$data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET des_tran = :des_tran WHERE co_tran = :co_tran");
+
+            $stmt -> bindParam(":co_tran", $data["co_tran"], PDO::PARAM_STR);
+            $stmt -> bindParam(":des_tran", $data["des_tran"], PDO::PARAM_STR);
+
+
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+        );
+        }
+    }
+
+    static public function mdlUpdateCondicio($table,$data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET cond_des = :cond_des, dias_cred = :dias_cred WHERE co_cond = :co_cond");
+
+            $stmt -> bindParam(":co_cond", $data["co_cond"], PDO::PARAM_STR);
+            $stmt -> bindParam(":cond_des", $data["cond_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":dias_cred", $data["dias_cred"], PDO::PARAM_STR);
+
+
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+            );
+        }
+    }
 
     static public function mdlGetClientsLike($tabla,$likess){
 
@@ -245,4 +450,6 @@ class ModelClients{
 
         $stmt = null;
     }
+
+
 }

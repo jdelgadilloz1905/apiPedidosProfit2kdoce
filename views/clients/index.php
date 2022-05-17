@@ -60,6 +60,14 @@ switch ($method){
 
         break;
 
+    case "clientregisterapp":
+
+            $respuesta = ControllerClients::ctrRegistrarClienteApp($obj);
+    
+            echo $respuesta;
+    
+            break;
+
     case "cxcvendedor":
 
         $respuesta = ControllerClients::ctrCuentaXCobrarVendedor($obj);
@@ -67,6 +75,22 @@ switch ($method){
         echo $respuesta;
 
         break;
+
+    case "registertransporteapp":
+
+        $respuesta = ControllerClients::ctrRegistrarTransporteApp($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "registercondicioapp":
+
+        $respuesta = ControllerClients::ctrRegistrarCondicioApp($obj);
+
+        echo $respuesta;
+
+        break;        
 
     default:
         echo json_encode(

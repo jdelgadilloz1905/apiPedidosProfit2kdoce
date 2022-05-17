@@ -17,6 +17,12 @@ switch ($method){
         echo $respuesta;
         break;
 
+    case  "productregisterapp":
+
+        $respuesta = ControllerProducts::ctrRegistrarProductoApp($obj);
+        echo $respuesta;
+        break;    
+
     case  "precioproducto":
         $respuesta = ControllerProducts::ctrConsultarPrecioArticulo($obj);
         echo $respuesta;

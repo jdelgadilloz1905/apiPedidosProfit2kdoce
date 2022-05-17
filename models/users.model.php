@@ -348,7 +348,7 @@ class ModelUsers{
                    
     }
 
-    static public function mdlUpdateVendedor($tabl1e,$data){
+    static public function mdlUpdateVendedor($table,$data){
 
         try {
             $stmt = Conexion::conectar()->prepare("UPDATE $table SET ven_des = :ven_des WHERE co_ven = :co_ven");
@@ -375,7 +375,7 @@ class ModelUsers{
 
             }
 
-            $stmt -> close();
+            //$stmt -> close();
 
             $stmt = null;
 
