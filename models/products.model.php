@@ -161,7 +161,7 @@ class ModelProducts{
 	                                                                Au.uni_principal,Au.uso_principal,Au.uni_secundaria,Au.uso_secundaria, u.des_uni AS des_Uni
                                                                 FROM  saArtUnidad AS Au
                                                                     INNER JOIN saUnidad u ON Au.co_uni = u.co_uni
-                                                                    WHERE Au.$item = :$item
+                                                                    WHERE Au.$item = :$item and Au.uni_principal=1
                                                                 ORDER BY co_art DESC, uni_principal DESC, uso_principal DESC, uni_secundaria DESC, uso_secundaria DESC");
 
             $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);

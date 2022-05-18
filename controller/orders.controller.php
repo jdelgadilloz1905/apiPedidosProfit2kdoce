@@ -287,6 +287,36 @@ class ControllerOrders{
         echo json_encode($result,http_response_code($result["statusCode"]));
     }
 
+    static public function ctrShowOrdenes(){
+
+        $respuesta = ModelsOrders::mdlShowOrdenes();
+
+        if(count($respuesta)>0){
+
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoOrder" =>$respuesta
+            );
+
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoOrder" =>""
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["statusCode"]));
+    }
+
+    static public function ctrUpdateOrden($data){
+
+        $result = ModelsOrders::mdlUpdateOrden($data["item1"],$data["valor1"],$data["item2"],$data["valor1"]);
+
+        echo json_encode($result,http_response_code($result["status"]));
+    }
+
     //REPORTES
 
     static public function ctrShowOrderUserReport($obj){
@@ -371,8 +401,5 @@ class ControllerOrders{
 
         );
     }
-
-
-
 
 }

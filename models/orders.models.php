@@ -106,9 +106,6 @@ class ModelsOrders{
         $stmt = null;
     }
 
-
-
-
     //ENCABEZADO
     static public function mdlShowOrderUserReport($fecha_desde,$fecha_hasta){
 
@@ -381,6 +378,47 @@ class ModelsOrders{
                 "mensaje" => "Fallo el proceso"
             );
         }
+
+    }
+
+    static public function mdlShowOrdenes(){
+
+        $stmt = Conexion::conectar()->prepare("SELECT o.*, c.tipo_precio from ordenes o left join clientes c on c.co_cli = o.co_cli where o.estatus_sin = 0 order by o.id desc ");
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    /*=============================================
+        ACTUALIZAR DATOS DE LAS ORDENES
+    =============================================*/
+
+    static public function mdlUpdateOrden( $item1, $valor1, $item2, $valor2){
+
+        $stmt = Conexion::conectar()->prepare("UPDATE ordenes SET $item1 = :$item1 WHERE $item2 = :$item2");
+
+        $stmt -> bindParam(":".$item1, $valor1, PDO::PARAM_STR);
+        $stmt -> bindParam(":".$item2, $valor2, PDO::PARAM_STR);
+
+
+        if($stmt -> execute()){
+
+            return "ok";
+
+        }else{
+
+            return "error";
+
+        }
+
+        $stmt -> close();
+
+        $stmt = null;
 
     }
 

@@ -43,9 +43,17 @@ switch ($method){
 
         break;
 
-    case "prueba":
+    case "pedidosorder":
 
-        $respuesta = ControllerOrders::ctrProbarStored($obj);
+        $respuesta = ControllerOrders::ctrShowOrdenes();
+
+        echo $respuesta;
+
+        break;
+
+    case "updateOrden":
+
+        $respuesta = ControllerOrders::ctrUpdateOrden($obj);
 
         echo $respuesta;
 
