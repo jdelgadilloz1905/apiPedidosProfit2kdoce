@@ -6,11 +6,28 @@ class ControllerClients{
     =============================================*/
     static public function ctrShowClients($data){
 
-        $tabla = "saCliente";
+        $tabla = "clientes";
 
         $respuesta = ModelClients::mdlShowClients($tabla,$data);
 
-        echo json_encode($respuesta);
+        if(count($respuesta)>0){
+
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoCli" =>$respuesta
+            );
+
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoCli" =>""
+            );
+        }
+
+
+        echo json_encode($result,http_response_code($result["statusCode"]));
 
     }
 
@@ -28,25 +45,24 @@ class ControllerClients{
 
     static public function ctrGetCuentaXCobrar($obj){
 
-        $respuesta = ModelClients::mdlGetCuentaXCobrar("saFacturaVenta",$obj);
+        $respuesta = ModelClients::mdlGetCuentaXCobrar("facturas",$obj);
 
         if(count($respuesta)>0){
 
-            echo json_encode(
-                array(
-                    "error" => false,
-                    "statusCode"=>200,
-                    "infoFacturaPendiente" =>$respuesta
-                ));
-        }else{
-            echo json_encode(
-                array(
-                    "error" => true,
-                    "statusCode"=>400,
-                    "infoFacturaPendiente" =>"No se encontraron registros"
-                ));
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoFacturaPendiente" =>$respuesta
+            );
 
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoFacturaPendiente" =>""
+            );
         }
+        echo json_encode($result,http_response_code($result["statusCode"]));
     }
 
     static public function ctrCuentaXCobrarVendedor($obj){
@@ -55,23 +71,20 @@ class ControllerClients{
 
         if(count($respuesta)>0){
 
-            echo json_encode(
-                array(
-                    "error" => false,
-                    "statusCode"=>200,
-                    "cantidad" =>count($respuesta),
-                    "infoDocumentos" =>$respuesta
-                ));
-        }else{
-            echo json_encode(
-                array(
-                    "error" => true,
-                    "statusCode"=>400,
-                    "cantidad" =>0,
-                    "infoDocumentos" =>"No se encontraron registros"
-                ));
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoDocumentos" =>$respuesta
+            );
 
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoDocumentos" =>""
+            );
         }
+        echo json_encode($result,http_response_code($result["statusCode"]));
     }
 
     static public function ctrObtenerNotasEntregaXCliente($obj){
@@ -80,21 +93,22 @@ class ControllerClients{
 
         if(count($respuesta)>0){
 
-            echo json_encode(
-                array(
-                    "error" => false,
-                    "statusCode"=>200,
-                    "infoNotaEntrega" =>$respuesta
-                ));
-        }else{
-            echo json_encode(
-                array(
-                    "error" => true,
-                    "statusCode"=>400,
-                    "infoNotaEntrega" =>"No se encontraron registros"
-                ));
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoNotaEntrega" =>$respuesta
+            );
 
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoNotaEntrega" =>""
+            );
         }
+        echo json_encode($result,http_response_code($result["statusCode"]));
+
+
 
     }
 
@@ -108,7 +122,7 @@ class ControllerClients{
                 array(
                     "error" => false,
                     "statusCode"=>200,
-                    "infoCobros" =>self::ctrPrepararJsonDocumento($respuesta)
+                    "infoCobros" =>$respuesta
                 )
 
             );
@@ -117,7 +131,7 @@ class ControllerClients{
                 array(
                     "error" => true,
                     "statusCode"=>400,
-                    "infoDocumentos" =>"No se encontraron registros"
+                    "infoCobros" =>"No se encontraron registros"
                 ));
 
         }
@@ -310,6 +324,49 @@ class ControllerClients{
             $result = ModelClients::mdlRegisterFile("condicion_pago", $data);
         }
         echo json_encode($result,http_response_code($result["status"]));
+
+    }
+
+    static public function ctrRegistrarFacturasPendienteApp($data){
+
+        $respuesta = ModelClients::mdlShowFileApp("facturas","doc_num", trim($data["doc_num"]));
+
+        if(isset($respuesta["id"])){
+
+            $result = ModelClients::mdlUpdateFacturaPendiente("facturas",$data);
+        }else{
+            $result = ModelClients::mdlRegisterFile("facturas", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+    }
+
+    static public function ctrRegistrarNeApp($data){
+
+        $respuesta = ModelClients::mdlShowFileApp("notas_entregas","doc_num", trim($data["doc_num"]));
+
+        if(isset($respuesta["id"])){
+
+            $result = ModelClients::mdlUpdateFacturaPendiente("notas_entregas",$data);  //se deja el mismo nombre porque la tabla es la misma y no se cambia la tabla porque despues para recorrer se torna lento el renderizado
+        }else{
+            $result = ModelClients::mdlRegisterFile("notas_entregas", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
+
+    }
+
+    static public function ctrRegistrarDocumentosApp($data){
+
+        $respuesta = ModelClients::mdlShowDocumentosApp("documentos","co_tipo_doc", trim($data["co_tipo_doc"]), "nro_doc", trim($data["nro_doc"]));
+
+        if(isset($respuesta["id"])){
+
+            $result = ModelClients::mdlUpdateDocumentos("documentos",$data);  //se deja el mismo nombre porque la tabla es la misma y no se cambia la tabla porque despues para recorrer se torna lento el renderizado
+        }else{
+            $result = ModelClients::mdlRegisterFile("documentos", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
 
     }
 }

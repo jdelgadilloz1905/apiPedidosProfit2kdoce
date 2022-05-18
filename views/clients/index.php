@@ -90,7 +90,33 @@ switch ($method){
 
         echo $respuesta;
 
-        break;        
+        break;
+
+    case "registerfacturaspendienteapp":
+
+        $respuesta = ControllerClients::ctrRegistrarFacturasPendienteApp($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "registernependienteapp":
+
+        $respuesta = ControllerClients::ctrRegistrarNeApp($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "registerdocumentosapp":
+
+        $respuesta = ControllerClients::ctrRegistrarDocumentosApp($obj);
+
+        echo $respuesta;
+
+        break;
+
+
 
     default:
         echo json_encode(

@@ -13,7 +13,7 @@ $method = str_replace("-","",$rutas[1]);
 switch ($method){
 
     case  "all":
-        $respuesta = ControllerProducts::ctrShowProducts($obj);
+        $respuesta = ControllerProducts::ctrShowProducts();
         echo $respuesta;
         break;
 
@@ -74,6 +74,14 @@ switch ($method){
     case "gettasa":
 
         $respuesta = ControllerProducts::ctrTasa();
+
+        echo $respuesta;
+
+        break;
+
+    case "preciosproductosapp":
+
+        $respuesta = ControllerProducts::ctrRegistrarPreciosProductosApp($obj);
 
         echo $respuesta;
 

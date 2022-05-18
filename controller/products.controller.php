@@ -5,7 +5,7 @@ class ControllerProducts{
     /*=============================================
     MOSTRAR LOS PRODUCTOS
     =============================================*/
-    static public function ctrShowProducts($data){
+    static public function ctrShowProducts(){
 
         $item = null;
 
@@ -13,13 +13,23 @@ class ControllerProducts{
 
         $respuesta = ModelProducts::mdlShowProducts($item,$valor);
 
-        echo json_encode(array(
-            "statusCode" => 200,
-            "error" => false,
-            "total" =>count($respuesta),
-            "infoProduct" =>$respuesta,
-            "mensaje" =>""
-        ));
+        if(count($respuesta)>0){
+
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoProduct" =>$respuesta
+            );
+
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoProduct" =>""
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["statusCode"]));
 
     }
 
@@ -32,9 +42,24 @@ class ControllerProducts{
             
             $result = ModelProducts::mdlUpdateProducto("productos",$data);
         }else{
-            $result = ModelProducts::mdlRegisterProducto("productos", $data);
+            $result = ModelProducts::mdlRegisterFile("productos", $data);
         }
         echo json_encode($result,http_response_code($result["status"]));
+
+    }
+
+    static public function ctrRegistrarPreciosProductosApp($data){
+
+        $respuesta = ModelProducts::mdlShowPrecioProductoApp($data);
+
+        if(isset($respuesta["id"])){
+
+            $result = ModelProducts::mdlUpdatePrecioProducto("precios_productos",$data);
+        }else{
+            $result = ModelProducts::mdlRegisterFile("precios_productos", $data);
+        }
+        echo json_encode($result,http_response_code($result["status"]));
+
 
     }
 
@@ -45,13 +70,23 @@ class ControllerProducts{
 
         $answer = ModelProducts::mdlGetFavoriteApi($data["co_user"]);
 
-        echo json_encode(array(
-            "statusCode" => 200,
-            "error" => false,
-            "total" =>count($answer),
-            "infoProduct" =>$answer,
-            "mensaje" =>""
-        ));
+        if(count($answer)>0){
+
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoProduct" =>$answer
+            );
+
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoProduct" =>""
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["statusCode"]));
     }
 
     static public function ctrPrepararProductos($data){
@@ -89,13 +124,24 @@ class ControllerProducts{
 
         $respuesta = ModelProducts::mdlConsultarPreciosArticulo($item,$valor);
 
-        echo json_encode(array(
-            "statusCode" => 200,
-            "error" => false,
-            "total" =>count($respuesta),
-            "infoPrecioArticulo" =>$respuesta,
-            "mensaje" =>""
-        ));
+        if(count($respuesta)>0){
+
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoPrecioArticulo" =>$respuesta
+            );
+
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoPrecioArticulo" =>""
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["statusCode"]));
+
     }
 
     static public function ctrConsultarPrecioXTipoCliente($data){
@@ -156,7 +202,7 @@ class ControllerProducts{
 
     static public function ctrGetProductsFavorites($data){
 
-        $tabla = "saFavoritos";
+        $tabla = "favoritos";
 
         $answer = ModelProducts::mdlGetProductsFavorites($tabla,$data);
 
@@ -169,7 +215,7 @@ class ControllerProducts{
 
     static public function ctrDeleteProductsFavorites($data){
 
-        $tabla = "saFavoritos";
+        $tabla = "favoritos";
 
         $answer = ModelProducts::mdlDeleteProductsFavorites($tabla,$data);
 
@@ -180,7 +226,7 @@ class ControllerProducts{
           =============================================*/
     static public function ctrAddFavorites($data){
 
-        $tabla = "saFavoritos";
+        $tabla = "favoritos";
 
         $answer = ModelProducts::mdlAddFavorites($tabla,$data);
 

@@ -13,7 +13,7 @@ switch ($method){
 
     case  "createorder":
 
-        $respuesta = ControllerOrders::ctrCreateOrder($obj);
+        $respuesta = ControllerOrders::ctrCreateOrderApp($obj);
 
         echo $respuesta;
 
@@ -37,7 +37,7 @@ switch ($method){
 
     case "datospedido":
 
-        $respuesta = ControllerOrders::ctrListOptionPedido($obj);
+        $respuesta = ControllerOrders::ctrListOptionPedido();
 
         echo $respuesta;
 

@@ -213,49 +213,78 @@ class ControllerOrders{
         }
     }
 
-    static public function ctrShowOrderUser($obj){
+    static public function ctrCreateOrderApp($data){
 
-        $respuesta = ModelsOrders::mdlShowOrderUser("saPedidoVentaApp","co_user",$obj["co_user"]); //BUSCO TODOS LOS CLIENTES
+        if(isset($data["client"]["cli_des"])){
 
-        if(count($respuesta)>0){
+            //primero valido que no exista el pedido
 
-            foreach ($respuesta as $key => $value){
+            $pedidoExist = ModelsOrders::mdlFindOrderIdApp($data["id_pedido"]);
 
-                $resul = ModelsOrders::mdlFindOrder($value["fact_num"]);
+            if(isset($pedidoExist["id_pedido"])){
+                echo json_encode(
+                    array(
+                        "error" => true,
+                        "statusCode"=>400,
+                        "mensaje" =>"Pedido ya existe con el ID ". $pedidoExist["id"]
+                    ));
+            }else{
+                $datos = array(
+                    "co_cli"=>$data["client"]["co_cli"],
+                    "co_tran"=>$data["transporte"],
+                    "co_cond"=>$data["formaPago"],
+                    "co_ven"=>$data["co_ven"],
+                    "sucursal"=>$data["sucursal"],
+                    "co_alma"=>$data["co_alma"],
+                    "co_mone"=>"US$",
+                    "anulado"=>0,
+                    "status"=>"0",
+                    "detasa"=>1,
+                    "total_neto"=>$data["total_neto"],
+                    "direc_ven"=>$data["direc_ven"],
+                    "id_pedido"=>$data["id_pedido"],
+                    "co_user"=>$data["co_user"],
+                    "renglones"=>json_encode($data["products"])
 
-                $resultado[$key] = array(
-                    "_id"=> $key+1,
-                    "doc_num" => $value["fact_num"],
-                    "co_cli" => $value["co_cli"],
-                    "co_user" => $value["co_user"],
-                    "total_neto" => $value["tot_neto"],
-                    "cli_des" => $value["cli_des"],
-                    "direc1" => $value["direc1"],
-                    "rif" => $value["rif"],
-                    "estatus"=> isset($resul["estatus"]) ? $resul["estatus"] : "",
-                    "telefonos" => $value["telefonos"],
-                    "fecha_reg" =>$value["fecha_reg"],
-                    "renglones" =>ModelsOrders::mdlShowOrderUser("saPedidoVentaRengApp","fact_num",$value["fact_num"])
                 );
-            }
 
-            echo json_encode(
-                array(
-                    "error" => false,
-                    "statusCode"=>200,
-                    "infoOrder" =>$resultado
-                ));
+                $resultadoProfit= ModelsOrders::mdlRegisterFile("ordenes", $datos);
+
+                echo json_encode($resultadoProfit,http_response_code($resultadoProfit["statusCode"]));
+
+            }
         }else{
+
             echo json_encode(
                 array(
                     "error" => true,
                     "statusCode"=>400,
-                    "infoOrder" =>$respuesta,
-                    "mensaje" => "no tienes pedido"
+                    "mensaje" =>"No ha seleccionado un cliente"
                 ));
+        }
+    }
 
+    static public function ctrShowOrderUser($obj){
+
+        $respuesta = ModelsOrders::mdlShowOrderUser("ordenes","co_user",$obj["co_user"]); //BUSCO TODOS LOS CLIENTES
+
+        if(count($respuesta)>0){
+
+            $result = array(
+                "error" => false,
+                "statusCode"=>200,
+                "infoOrder" =>$respuesta
+            );
+
+        }else{
+            $result = array(
+                "error" => false,
+                "statusCode"=>400,
+                "infoOrder" =>""
+            );
         }
 
+        echo json_encode($result,http_response_code($result["statusCode"]));
     }
 
     //REPORTES
@@ -307,11 +336,11 @@ class ControllerOrders{
 
 
 
-    static public function ctrListOptionPedido($data){
+    static public function ctrListOptionPedido(){
 
-        $listaTransporte = ModelsOrders::mdlListOptionPedido("saTransporte","co_tran","des_tran");
+        $listaTransporte = ModelsOrders::mdlListOptionPedido("transporte","co_tran","des_tran");
 
-        $listaCondicio = ModelsOrders::mdlListOptionPedido("saCondicionPago","co_cond","cond_des");
+        $listaCondicio = ModelsOrders::mdlListOptionPedido("condicion_pago","co_cond","cond_des");
 
         echo json_encode(
             array(

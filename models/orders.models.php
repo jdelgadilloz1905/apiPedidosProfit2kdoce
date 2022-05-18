@@ -93,7 +93,7 @@ class ModelsOrders{
 
     static public function mdlShowOrderUser($tabla,$item,$valor){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  * FROM $tabla  where $item = :$item order by fact_num desc");
+        $stmt = Conexion::conectar()->prepare("SELECT  o.*, c.cli_des FROM $tabla  o LEFT JOIN clientes c ON o.co_cli = c.co_cli	WHERE o.$item = :$item order BY o.fecha_creacion desc ");
 
         $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
 
@@ -269,7 +269,9 @@ class ModelsOrders{
 
     static public function mdlFindOrderIdApp($idPedido){
 
-        $stmt = Conexion::conectar()->query("select *from saPedidoVenta where campo8 = '".$idPedido."' ");
+        $stmt = Conexion::conectar()->prepare("SELECT  * FROM ordenes  where id_pedido = :id_pedido");
+
+        $stmt -> bindParam(":id_pedido", $idPedido, PDO::PARAM_STR);
 
         $stmt -> execute();
 
@@ -332,6 +334,55 @@ class ModelsOrders{
         $stmt = null;
     }
 
+    static public function mdlRegisterFile($table, $data){
+
+        try {
+            $columns = "";
+            $params="";
+            foreach ($data as $key => $value){
+
+                $columns .=$key.",";
+                $params .=":".$key.",";
+            }
+            $columns = substr($columns, 0, -1);
+            $params = substr($params, 0, -1);
+
+            $link = Conexion::conectar();
+            $sql = "INSERT INTO $table ($columns) VALUES ($params )";
+
+            $stmt = $link->prepare($sql);
+
+            foreach ($data as $key => $value){
+
+                $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
+            }
+
+            if($stmt->execute()){
+
+                $response = array(
+                    "statusCode"=>200,
+                    "result"=>$link->lastInsertId(),
+                    "mensaje" => "El proceso fue exitoso"
+                );
+            }else{
+
+                $response = array(
+                    "statusCode"=>404,
+                    "result"=>$link->errorInfo(),
+                    "mensaje" => "Fallo el proceso"
+                );
+            }
+            return $response;
+
+        } catch (PDOException $th) {
+            return $response = array(
+                "statusCode"=>500,
+                "result"=>$th,
+                "mensaje" => "Fallo el proceso"
+            );
+        }
+
+    }
 
 
 }

@@ -6,32 +6,14 @@ class ModelClients{
     static public function mdlShowClients($tabla,$data){
 
         if($data["co_ven"] == 99999){
-            $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
-                                                            (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
-                                                            from $tabla c 
-                                                                where c.inactivo =0
-                                                                order by c.co_cli desc");
-
-
+            $stmt = Conexion::conectar()->prepare(" SELECT * from $tabla order by co_cli desc");
         }else{
-
-            $stmt = Conexion::conectar()->prepare(" SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif, c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
-                                                            (select top 1 co_precio from saTipoCliente where tip_cli = c.tip_cli ) tipo_precio
-                                                            from $tabla c 
-                                                                where c.inactivo =0 and c.co_ven = :co_ven
-                                                                order by c.co_cli desc");
-
+            $stmt = Conexion::conectar()->prepare(" SELECT * from $tabla where co_ven = :co_ven order by co_cli desc");
             $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
         }
-
-
-
         $stmt -> execute();
-
         return $stmt -> fetchAll(PDO::FETCH_ASSOC);
-
         $stmt -> close();
-
         $stmt = null;
     }
     
@@ -40,6 +22,23 @@ class ModelClients{
         $stmt = Conexion::conectar()->prepare(" SELECT * from $table where $item = :$item");
 
         $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+        $stmt -> execute();
+
+        return $stmt -> fetch(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    static public function mdlShowDocumentosApp($table, $item, $valor,$item1, $valor1)
+    {
+        $stmt = Conexion::conectar()->prepare(" SELECT * from $table where $item = :$item and $item1 = :$item1");
+
+        $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+
+        $stmt -> bindParam(":".$item1, $valor1, PDO::PARAM_STR);
 
         $stmt -> execute();
 
@@ -240,6 +239,106 @@ class ModelClients{
         }
     }
 
+    static public function mdlUpdateFacturaPendiente($table, $data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET co_cli = :co_cli, co_ven = :co_ven, cli_des = :cli_des, fec_emis = :fec_emis, fec_venc = :fec_venc,
+                                                              saldo = :saldo,tasa = :tasa WHERE doc_num = :doc_num");
+
+            $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":cli_des", $data["cli_des"], PDO::PARAM_STR);
+            $stmt -> bindParam(":doc_num", $data["doc_num"], PDO::PARAM_STR);
+            $stmt -> bindParam(":fec_emis", $data["fec_emis"], PDO::PARAM_STR);
+            $stmt -> bindParam(":fec_venc", $data["fec_venc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":saldo", $data["saldo"], PDO::PARAM_STR);
+            $stmt -> bindParam(":tasa", $data["tasa"], PDO::PARAM_STR);
+
+
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+            );
+        }
+    }
+
+    static public function mdlUpdateDocumentos($table, $data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET co_cli = :co_cli, co_ven = :co_ven, 
+                                                                              fec_emis = :fec_emis, fec_venc = :fec_venc, total_neto = :total_neto,
+                                                                              saldo = :saldo, existeDocReng = :existeDocReng WHERE nro_doc = :nro_doc and co_tipo_doc = :co_tipo_doc ");
+
+            $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_tipo_doc", $data["co_tipo_doc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":nro_doc", $data["nro_doc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":fec_emis", $data["fec_emis"], PDO::PARAM_STR);
+            $stmt -> bindParam(":fec_venc", $data["fec_venc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":saldo", $data["saldo"], PDO::PARAM_STR);
+            $stmt -> bindParam(":total_neto", $data["total_neto"], PDO::PARAM_STR);
+            $stmt -> bindParam(":existeDocReng", $data["existeDocReng"], PDO::PARAM_STR);
+
+
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+            );
+        }
+    }
+
     static public function mdlGetClientsLike($tabla,$likess){
 
         $stmt = Conexion::conectar()->query("SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif,c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
@@ -258,12 +357,7 @@ class ModelClients{
 
     static public function mdlGetCuentaXCobrar($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  c.cli_des, f.doc_num,CONVERT(VARCHAR,f.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,f.fec_venc, 101) AS fec_venc, 
-                                                            FORMAT(f.saldo/(case when ISNULL(f.campo1,0) <> '0' then replace(f.campo1,',','.')  else case when f.tasa > 1 then f.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,f.fec_emis, 101)) end  end),'##,###.00') saldo,
-                                                            case when ISNULL(f.campo1,0) <> '0' then replace(f.campo1,',','.')  else case when f.tasa > 1 then f.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,f.fec_emis, 101)) end  end  as tasa
-                                                            FROM saFacturaVenta f 
-                                                            LEFT JOIN saCliente c 
-                                                            ON c.co_cli = f.co_cli WHERE f.saldo>0 AND f.co_cli = :co_cli ORDER BY f.co_cli DESC ");
+        $stmt = Conexion::conectar()->prepare("SELECT  * from  $tabla where co_cli = :co_cli ORDER BY co_cli DESC ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
 
@@ -280,47 +374,30 @@ class ModelClients{
 
         if($data["co_ven"] == 99999){
 
-            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
-                                                            (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
+            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli,pr.tipo_precio 
                                                             FROM
-                                                                saDocumentoVenta dc
-                                                                INNER JOIN saTipoDocumento td ON dc.co_tipo_doc = td.co_tipo_doc
-                                                                INNER JOIN saCliente pr ON pr.co_cli = dc.co_cli
-                                                                LEFT JOIN saDescProntoPago dxpp ON dxpp.tip_Cli = pr.tip_Cli
-                                                            WHERE
-                                                                td.usar_ventas = 1
-                                                                AND dc.anulado = 0
-                                                                AND dc.saldo > 0
-                                                                AND pr.inactivo =0
+                                                                documentos dc
+                                                                INNER JOIN clientes pr ON pr.co_cli = dc.co_cli
                                                             GROUP BY 
-                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli 
+                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli,pr.tipo_precio  
                                                             ORDER BY 
                                                                 dc.co_cli");
 
 
         }else{
-            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli, 
-                                                            (select top 1 co_precio from saTipoCliente where tip_cli = pr.tip_cli ) tipo_precio 
+            $stmt = Conexion::conectar()->prepare("SELECT dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli,pr.tipo_precio 
                                                             FROM
-                                                                saDocumentoVenta dc
-                                                                INNER JOIN saTipoDocumento td ON dc.co_tipo_doc = td.co_tipo_doc
-                                                                INNER JOIN saCliente pr ON pr.co_cli = dc.co_cli
-                                                                LEFT JOIN saDescProntoPago dxpp ON dxpp.tip_Cli = pr.tip_Cli
+                                                                documentos dc
+                                                                INNER JOIN clientes pr ON pr.co_cli = dc.co_cli
                                                             WHERE
-                                                                td.usar_ventas = 1
-                                                                AND dc.anulado = 0
-                                                                AND dc.saldo > 0
-                                                                AND dc.co_ven = :co_ven
-                                                                AND pr.inactivo =0
+                                                                dc.co_ven = :co_ven
                                                             GROUP BY 
-                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli 
+                                                                dc.co_cli,pr.cli_des,pr.direc1, pr.telefonos, pr.rif, pr.tip_cli,pr.tipo_precio 
                                                             ORDER BY 
                                                                 dc.co_cli");
 
             $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
         }
-
-
 
         $stmt -> execute();
 
@@ -333,13 +410,7 @@ class ModelClients{
 
     static public function mdlObtenerNotasEntregaXCliente($data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT c.cli_des, v.doc_num, CONVERT(VARCHAR,v.fec_emis, 101) AS fec_emis,CONVERT(VARCHAR,v.fec_venc, 101) AS fec_venc,
-                                                            FORMAT(v.total_neto/(case when ISNULL(v.campo1,0) <> '0' then replace(v.campo1,',','.')  else case when v.tasa > 1 then v.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,v.fec_emis, 101)) end  end) ,'##,###.00') saldo,
-                                                            case when ISNULL(v.campo1,0) <> '0' then replace(v.campo1,',','.')  else case when v.tasa > 1 then v.tasa else (select tasa_v from saTasa where CONVERT(VARCHAR,fecha, 101) = CONVERT(VARCHAR,v.fec_emis, 101)) end  end  as tasa
-                                                            FROM saNotaEntregaVenta v
-                                                                INNER JOIN saCliente c ON v.co_cli = c.co_cli
-                                                                WHERE v.anulado = 0 AND v.co_cli = :co_cli AND v.status <>2 
-                                                                ORDER BY v.doc_num desc ");
+        $stmt = Conexion::conectar()->prepare("SELECT * from notas_entregas where co_cli = :co_cli ORDER BY doc_num desc ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
 
@@ -355,24 +426,14 @@ class ModelClients{
 
     static public function mdlObtenerDocumentos($data){
 
-        try {
 
-            //$sql ="EXEC pObtenerDocumentosVenta @sCliente=N'$data[co_cli]'";
+        $stmt = Conexion::conectar()->prepare("SELECT * from documentos where co_cli = :co_cli ");
 
-            $sql ="EXEC pObtenerDocumentosVentaApp @sCliente=N'$data[co_cli]'";
+        $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
 
-            $stmt = Conexion::conectar()->query($sql);
+        $stmt -> execute();
 
-            $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-
-        }catch (PDOException $pe) {
-
-            die("Error occurred:" . $pe->getMessage());
-
-        }
-
-        return $stmt -> fetchAll();
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
 
         $stmt -> close();
 

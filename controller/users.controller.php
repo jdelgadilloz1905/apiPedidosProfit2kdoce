@@ -35,8 +35,7 @@ class ControllerUsers{
                                     "modo" =>"directo",
                                     "email" =>$answer["email"],
                                     "foto" =>$answer["foto"],
-                                    "co_ven" =>$answer["co_ven"],
-                                    "rol" =>json_decode($answer["rol"])
+                                    "co_ven" =>$answer["co_ven"]
                                 );
 
                                 /*=============================================
@@ -321,14 +320,9 @@ class ControllerUsers{
         $encriptar = crypt($data["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
         //busco los datos del vendedor
-        $datoVendedor = ModelUsers::mdlShowUserProfit("saVendedor","co_ven",$data["co_ven"]);
-
-        //busco el ultimo id generado
-        $codigo = ModelsConfig::mdlCorrelativoUsuario("usuarios","id");
-
+        $datoVendedor = ModelUsers::mdlShowUserProfit("vendedores","co_ven",$data["co_ven"]);
 
         $datos = array(
-            "id" => isset($codigo["codigo"]) ? $codigo["codigo"] : 1,
             "email" => $data["email"],
             "usuario" => $data["username"],
             "nombre" => $datoVendedor["ven_des"],
@@ -341,7 +335,7 @@ class ControllerUsers{
         //ANTES REALIZO UNA VALIDACION SI EL USUARIO EXISTE NUEVAMENTE PARA EVITAR DUPLICIDAD
         $result = self::ctrShowUsers("email",trim($data["email"]),"usuario") ;
 
-        //echo json_encode(array("datos"=>$datos));
+
         if(isset($result["email"])){
 
             echo json_encode(array(
@@ -465,7 +459,7 @@ class ControllerUsers{
 
         if(isset($result["email"])){
             echo json_encode(array(
-                "statusCode" => "201",
+                "statusCode" => 200,
                 "error" => true,
                 "infoUser" =>""
             ));
@@ -497,7 +491,7 @@ class ControllerUsers{
         if(isset($result["id"])){
 
             echo json_encode(array(
-                "statusCode" => 201,
+                "statusCode" => 200,
                 "error" => false,
                 "infoUser" =>ModelUsers::mdlShowUser("usuarios","id",$data["id"])
             ));
