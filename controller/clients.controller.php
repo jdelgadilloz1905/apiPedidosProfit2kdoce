@@ -161,13 +161,13 @@ class ControllerClients{
 
     static public function ctrObtenerOpciones(){
 
-        $getTipo  = ModelClients::mdlListOptionCliente("saTipoCliente","tip_cli","des_tipo");
+        $getTipo  = ModelClients::mdlListOptionCliente("tipo_cliente","tip_cli","des_tipo");
 
-        $getCondicionespago= ModelClients::mdlListOptionCliente("saCondicionPago","co_cond","cond_des");
+        $getCondicionespago= ModelClients::mdlListOptionCliente("condicion_pago","co_cond","cond_des");
 
-        $getSegmento= ModelClients::mdlListOptionCliente("saSegmento","co_seg","seg_des");
+        $getSegmento= ModelClients::mdlListOptionCliente("segmento","co_seg","seg_des");
 
-        $proximoNumero = ModelClients::mdlProximoNumero();
+        //$proximoNumero = ModelClients::mdlProximoNumero();
 
         echo json_encode(
             array(
@@ -175,8 +175,7 @@ class ControllerClients{
                 "statusCode"=>200,
                 "infoCondiciones" =>$getCondicionespago,
                 "infoTipo" =>$getTipo,
-                "infoSegmento" =>$getSegmento,
-                "correlativo" => $proximoNumero["Codigo"] +1
+                "infoSegmento" =>$getSegmento
             )
         );
     }
@@ -185,101 +184,36 @@ class ControllerClients{
 
         //$proximoNumero = ModelClients::mdlProximoNumero(); //ya no va se va tomar el codigo del rif del mismo cliente
 
+
+
         $datos = array(
-            "sCo_Cli"=>substr($data["rif"],1,16),
-            "sCli_Des"=>strtoupper($data["nombre"]),
-            "sCo_Seg"=>$data["segmento"],
-            "sCo_Zon"=>"0002",
-            "sSalesTax"=>"NULL",
-            "sLogin"=>"NULL",
-            "binactivo"=>1,
-            "blunes"=>$data["lunes"] == true ? 1 : 0,
-            "bmartes"=>$data["martes"] == true ? 1 : 0,
-            "bmiercoles"=>$data["miercoles"] == true ? 1 : 0,
-            "bjueves"=>$data["jueves"] == true ? 1 : 0,
-            "bviernes"=>$data["viernes"] == true ? 1 : 0,
-            "bsabado"=>$data["sabado"] == true ? 1 : 0,
-            "bdomingo"=>$data["domingo"] == true ? 1 : 0,
-            "bcontrib"=>1,
-            "bvalido"=>0,
-            "bsincredito"=>0,
-            "sDirec1"=>strtoupper($data["direccion"]),
-            "sDirec2"=>"NULL",
-            "stelefonos"=>$data["telefono"],
-            "sfax"=>"NULL",
-            "sRespons"=>strtoupper($data["responsable"]),
-            "sdfecha_reg"=>date("Ymd H:i:s"),
-            "stip_cli"=>$data["tipo"],
-            "demont_cre"=>0,
-            "iplaz_pag"=>0,
-            "iId"=>0,
-            "iPuntaje"=>0,
-            "dedesc_ppago"=>0,
-            "dedesc_glob"=>0,
-            "srif"=>$data["rif"],
-            "sdis_cen"=>"NULL",
-            "snit"=>"NULL",
-            "sco_cta_ingr_egr"=>"120101",
-            "scomentario"=>strtoupper($data["comentario"]),
-            "bjuridico"=>0,
-            "itipo_adi"=>1,
-            "smatriz"=>"NULL",
-            "sco_tab"=>"NULL",
-            "stipo_per"=>"NULL",
-            "sco_pais"=>"VE",
-            "sciudad"=>strtoupper($data["ciudad"]),
-            "szip"=>"NULL",
-            "sWebSite"=>"NULL",
-            "bcontribu_e"=>0,
-            "brete_regis_doc"=>0,
-            "deporc_esp"=>0,
-            "spassword"=>"NULL",
-            "sestado"=>"NULL",
-            "sserialp"=>"NULL",
-            "semail"=>strtoupper($data["email"]),
-            "sdir_ent2"=>strtoupper($data["direccionEntrega"]),
-            "sfrecu_vist"=>"NULL",
-            "shorar_caja"=>"NULL",
-            "sco_ven"=>$data["co_ven"],
-            "sco_mone"=>"US$",
-            "scond_pag"=>$data["condicion"],
-            "sTComp"=>"NULL",
-            "sN_db"=>"NULL",
-            "sN_cr"=>"NULL",
-            "semail_alterno"=>"NULL",
-            "sCampo1"=>"NULL",
-            "sCampo2"=>"NULL",
-            "sCampo3"=>"NULL",
-            "sCampo4"=>"NULL",
-            "sCampo5"=>"NULL",
-            "sCampo6"=>"NULL",
-            "sCampo7"=>"NULL",
-            "sCampo8"=>"NULL",
-            "sRevisado"=>"NULL",
-            "sTrasnfe"=>"NULL",
-            "sco_sucu_in"=>"NULL",
-            "sco_us_in"=>"PROFIT",
-            "sMaquina"=>"AppMovil"
+            "co_cli"=>"",
+            "cli_des"=>strtoupper($data["nombre"]),
+            "co_seg"=>$data["segmento"],
+            "lunes"=>$data["lunes"] == true ? 1 : 0,
+            "martes"=>$data["martes"] == true ? 1 : 0,
+            "miercoles"=>$data["miercoles"] == true ? 1 : 0,
+            "jueves"=>$data["jueves"] == true ? 1 : 0,
+            "viernes"=>$data["viernes"] == true ? 1 : 0,
+            "sabado"=>$data["sabado"] == true ? 1 : 0,
+            "domingo"=>$data["domingo"] == true ? 1 : 0,
+            "direc1"=>strtoupper($data["direccion"]),
+            "telefonos"=>$data["telefono"],
+            "respons"=>strtoupper($data["responsable"]),
+            "tip_cli"=>$data["tipo"],
+            "rif"=>$data["rif"],
+            "comentario"=>strtoupper($data["comentario"]),
+            "ciudad"=>strtoupper($data["ciudad"]),
+            "email"=>strtoupper($data["email"]),
+            "dir_ent2"=>strtoupper($data["direccionEntrega"]),
+            "co_ven"=>$data["co_ven"],
+            "cond_pag"=>$data["condicion"],
         );
 
 
-        $resultado = ModelClients::mdlregistrarCliente($datos);
+        $resultado = ModelClients::mdlRegisterFile("clientes",$datos);
 
-        if($resultado == "ok"){
-            echo json_encode(
-                array(
-                    "error" => false,
-                    "statusCode"=>200,
-                    "mensaje" =>"Registro creado exitosamente #".substr($data["rif"],1,16)
-                ));
-        }else{
-            echo json_encode(
-                array(
-                    "error" => true,
-                    "statusCode"=>400,
-                    "mensaje" =>"Error, registrando el cliente ". $resultado
-                ));
-        }
+        echo json_encode($resultado,http_response_code($resultado["status"]));
     }
 
 
@@ -368,5 +302,33 @@ class ControllerClients{
         echo json_encode($result,http_response_code($result["status"]));
 
 
+    }
+
+    static public function ctrRegistrarClienteProfit(){
+
+        $respuesta = ModelClients::mdlShowClientsParaProfit();
+        if(count($respuesta)>0){
+
+            $result = array(
+                    "status"=>200,
+                    "result" =>$respuesta
+                );
+        }else{
+            $result=array(
+                    "status"=>400,
+                    "result" =>"No se encontraron registros"
+                );
+        }
+
+        echo json_encode($result,http_response_code($result["status"]));
+
+
+    }
+
+    static public function ctrUpdateClient($data){
+
+        $result = ModelClients::mdlUpdateClient($data);
+
+        echo json_encode($result,http_response_code($result["status"]));
     }
 }

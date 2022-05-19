@@ -68,6 +68,22 @@ switch ($method){
     
             break;
 
+    case "registrarclienteprofit":
+
+        $respuesta = ControllerClients::ctrRegistrarClienteProfit($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "updateclient":
+
+        $respuesta = ControllerClients::ctrUpdateClient($obj);
+
+        echo $respuesta;
+
+        break;
+
     case "cxcvendedor":
 
         $respuesta = ControllerClients::ctrCuentaXCobrarVendedor($obj);

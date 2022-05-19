@@ -398,12 +398,15 @@ class ModelsOrders{
         ACTUALIZAR DATOS DE LAS ORDENES
     =============================================*/
 
-    static public function mdlUpdateOrden( $item1, $valor1, $item2, $valor2){
+    static public function mdlUpdateOrden($data){
 
-        $stmt = Conexion::conectar()->prepare("UPDATE ordenes SET $item1 = :$item1 WHERE $item2 = :$item2");
+        $stmt = Conexion::conectar()->prepare("UPDATE ordenes SET doc_num = :doc_num, estatus_sin = :estatus_sin, comentario = :comentario WHERE id_pedido = :id_pedido");
 
-        $stmt -> bindParam(":".$item1, $valor1, PDO::PARAM_STR);
-        $stmt -> bindParam(":".$item2, $valor2, PDO::PARAM_STR);
+        $stmt -> bindParam(":doc_num", $data["doc_num"], PDO::PARAM_STR);
+        $stmt -> bindParam(":id_pedido", $data["id_pedido"], PDO::PARAM_STR);
+        $stmt -> bindParam(":estatus_sin", $data["estatus_sin"], PDO::PARAM_STR);
+        $stmt -> bindParam(":comentario", $data["comentario"], PDO::PARAM_STR);
+
 
 
         if($stmt -> execute()){

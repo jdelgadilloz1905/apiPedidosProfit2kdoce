@@ -6,11 +6,20 @@ class ModelClients{
     static public function mdlShowClients($tabla,$data){
 
         if($data["co_ven"] == 99999){
-            $stmt = Conexion::conectar()->prepare(" SELECT * from $tabla order by co_cli desc");
+            $stmt = Conexion::conectar()->prepare(" SELECT * from $tabla where co_cli <> '' order by  co_cli desc");
         }else{
-            $stmt = Conexion::conectar()->prepare(" SELECT * from $tabla where co_ven = :co_ven order by co_cli desc");
+            $stmt = Conexion::conectar()->prepare(" SELECT * from $tabla where co_ven = :co_ven and co_cli <> ''order by co_cli desc");
             $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
         }
+        $stmt -> execute();
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+        $stmt -> close();
+        $stmt = null;
+    }
+
+    static public function mdlShowClientsParaProfit(){
+
+        $stmt = Conexion::conectar()->prepare(" SELECT * from clientes where co_cli = '' order by co_cli desc");
         $stmt -> execute();
         return $stmt -> fetchAll(PDO::FETCH_ASSOC);
         $stmt -> close();
@@ -80,22 +89,22 @@ class ModelClients{
                 $response = array(
                     "status"=>200,
                     "result"=>$link->lastInsertId(),
-                    "comment" => "El proceso fue exitoso"
+                    "comment" => "Registro creado exitosamente"
                 );
             }else{
 
                 $response = array(
-                    "status"=>404,
+                    "status"=>400,
                     "result"=>$link->errorInfo(),
-                    "comment" => "Fallo el proceso"
+                    "comment" => "Fallo el registro"
                 );
             }
             return $response;
 
-        } catch (\Throwable $th) {
+        } catch (PDOException $th) {
             return $response = array(
                     "status"=>500,
-                    "result"=>$th,
+                    "result"=>$th->getMessage(),
                     "comment" => "Fallo el proceso"
             );
         }
@@ -477,40 +486,34 @@ class ModelClients{
         $stmt = null;
     }
 
-    static public function mdlregistrarCliente($datos){
+    static public function mdlUpdateClient($data){
 
-        try {
+        $stmt = Conexion::conectar()->prepare("UPDATE clientes SET co_cli = :co_cli, estatus_sin = :estatus_sin, comentario1 = :comentario1 WHERE id = :id");
 
-            $sql="exec pInsertarCliente @sCo_Cli='$datos[sCo_Cli]',@sCli_Des='$datos[sCli_Des]',@sCo_Seg='$datos[sCo_Seg]',@sCo_Zon='$datos[sCo_Zon]',@sSalesTax=$datos[sSalesTax],@sLogin=$datos[sLogin],@binactivo=$datos[binactivo],@blunes=$datos[blunes],
-            @bmartes=$datos[bmartes],@bmiercoles=$datos[bmiercoles],@bjueves=$datos[bjueves],@bviernes=$datos[bviernes], @bsabado=$datos[bsabado],@bdomingo=$datos[bdomingo],@bcontrib=$datos[bcontrib],@bvalido=$datos[bvalido],@bsincredito=$datos[bsincredito],@sDirec1='$datos[sDirec1]',
-            @sDirec2=$datos[sDirec2],@stelefonos='$datos[stelefonos]',@sfax=$datos[sfax],@sRespons='$datos[sRespons]',@sdfecha_reg='$datos[sdfecha_reg]',@stip_cli='$datos[stip_cli]',@demont_cre=$datos[demont_cre],@iplaz_pag=$datos[iplaz_pag],@iId=$datos[iId], @iPuntaje=$datos[iPuntaje],@dedesc_ppago=$datos[dedesc_ppago],@dedesc_glob=$datos[dedesc_glob],
-            @srif='$datos[srif]',@sdis_cen=$datos[sdis_cen],@snit=$datos[snit],@sco_cta_ingr_egr='$datos[sco_cta_ingr_egr]',@scomentario='$datos[scomentario]',@bjuridico=$datos[bjuridico],@itipo_adi=$datos[itipo_adi],@smatriz=$datos[smatriz],@sco_tab=$datos[sco_tab],@stipo_per=$datos[stipo_per],@sco_pais='$datos[sco_pais]',
-            @sciudad='$datos[sciudad]',@szip=$datos[szip],@sWebSite=$datos[sWebSite],@bcontribu_e=$datos[bcontribu_e],@brete_regis_doc=$datos[brete_regis_doc],@deporc_esp=$datos[deporc_esp],@spassword=$datos[spassword],@sestado=$datos[sestado],@sserialp=$datos[sserialp],@semail='$datos[semail]',@sdir_ent2='$datos[sdir_ent2]',@sfrecu_vist=$datos[sfrecu_vist],
-            @shorar_caja=$datos[shorar_caja],@sco_ven='$datos[sco_ven]', @sco_mone='$datos[sco_mone]',@scond_pag='$datos[scond_pag]',@sTComp=$datos[sTComp],@sN_db=$datos[sN_db],@sN_cr=$datos[sN_cr],@semail_alterno=$datos[semail_alterno],@sCampo1=$datos[sCampo1],@sCampo2=$datos[sCampo2],@sCampo3=$datos[sCampo3],@sCampo4=$datos[sCampo4],
-            @sCampo5=$datos[sCampo5],@sCampo6=$datos[sCampo6],@sCampo7=$datos[sCampo7],@sCampo8=$datos[sCampo8],@sRevisado=$datos[sRevisado], @sTrasnfe=$datos[sTrasnfe],@sco_sucu_in='$datos[sco_sucu_in]',@sco_us_in='$datos[sco_us_in]',@sMaquina='$datos[sMaquina]'";
+        $stmt -> bindParam(":id", $data["id"], PDO::PARAM_STR);
+        $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
+        $stmt -> bindParam(":estatus_sin", $data["estatus_sin"], PDO::PARAM_STR);
+        $stmt -> bindParam(":comentario1", $data["comentario1"], PDO::PARAM_STR);
 
 
-            $stmt = Conexion::conectar()->query($sql);
+
+        if($stmt -> execute()){
 
             return "ok";
 
-            $stmt->close();
+        }else{
 
-            $stmt = null;
-
-
-        }catch (PDOException $pe) {
-
-            die("Error occurred:" . $pe->getMessage());
+            return "error";
 
         }
-
-        return $stmt -> fetch();
 
         $stmt -> close();
 
         $stmt = null;
+
     }
+
+
 
 
 }

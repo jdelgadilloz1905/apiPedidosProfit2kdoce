@@ -294,15 +294,13 @@ class ControllerOrders{
         if(count($respuesta)>0){
 
             $result = array(
-                "error" => false,
-                "statusCode"=>200,
+                "status"=>200,
                 "infoOrder" =>$respuesta
             );
 
         }else{
             $result = array(
-                "error" => false,
-                "statusCode"=>400,
+                "status"=>400,
                 "infoOrder" =>""
             );
         }
@@ -312,7 +310,7 @@ class ControllerOrders{
 
     static public function ctrUpdateOrden($data){
 
-        $result = ModelsOrders::mdlUpdateOrden($data["item1"],$data["valor1"],$data["item2"],$data["valor1"]);
+        $result = ModelsOrders::mdlUpdateOrden($data);
 
         echo json_encode($result,http_response_code($result["status"]));
     }

@@ -51,7 +51,7 @@ switch ($method){
 
         break;
 
-    case "updateOrden":
+    case "updateorden":
 
         $respuesta = ControllerOrders::ctrUpdateOrden($obj);
 
