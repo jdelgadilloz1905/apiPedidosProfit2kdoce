@@ -13,15 +13,13 @@ class ControllerClients{
         if(count($respuesta)>0){
 
             $result = array(
-                "error" => false,
-                "statusCode"=>200,
+                "status"=>200,
                 "infoCli" =>$respuesta
             );
 
         }else{
             $result = array(
-                "error" => false,
-                "statusCode"=>400,
+                "status"=>400,
                 "infoCli" =>""
             );
         }
