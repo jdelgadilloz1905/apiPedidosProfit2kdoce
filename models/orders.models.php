@@ -109,15 +109,10 @@ class ModelsOrders{
     //ENCABEZADO
     static public function mdlShowOrderUserReport($fecha_desde,$fecha_hasta){
 
-        $stmt = Conexion::conectar()->query("SELECT p.doc_num,p.co_cli,p.total_neto, p.dir_ent direc1, 
-                                                        (CASE WHEN p.status=0 THEN 'Sin procesar' ELSE 
-                                                        CASE WHEN p.status=1 THEN 'Parc procesado' ELSE
-                                                        CASE WHEN p.status=2 THEN 'Procesado' END END END) AS estatus, 
-                                                        p.fec_emis fecha_reg,c.cli_des, c.rif, c.telefonos
-                                                            FROM saPedidoVenta p 
-                                                            LEFT JOIN saCliente c
-                                                            ON p.co_cli = c.co_cli
-                                                            WHERE p.fec_emis BETWEEN DATEADD(DAY,-1,'".$fecha_desde."') AND DATEADD(DAY,1,'".$fecha_hasta."') ORDER BY p.doc_num DESC");
+        $stmt = Conexion::conectar()->query("SELECT *, c.cli_des FROM ordenes o 
+                                                        LEFT JOIN clientes c 
+                                                          ON o.co_cli = c.co_cli 
+                                                            where o.fecha_creacion between '".$fecha_desde."' and '".$fecha_hasta."' ORDER BY o.doc_num DESC");
 
 
         $stmt -> execute();
@@ -128,6 +123,7 @@ class ModelsOrders{
 
         $stmt = null;
     }
+
 
     //DETALLE
     static public function mdlShowOrderReport($valor){
