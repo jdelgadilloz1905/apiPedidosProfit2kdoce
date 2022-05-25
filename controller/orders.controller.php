@@ -327,7 +327,7 @@ class ControllerOrders{
         $fecha_hasta = date("Y-m-d",strtotime($obj["dateEnd"]."+ 1 days"));
 
 
-        $respuesta = ModelsOrders::mdlShowOrderUserReport($fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
+        $respuesta = ModelsOrders::mdlShowOrderUserReport($obj["co_ven"],$obj["co_user"],$fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
 
         if(count($respuesta)>0){
 

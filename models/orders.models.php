@@ -107,12 +107,22 @@ class ModelsOrders{
     }
 
     //ENCABEZADO
-    static public function mdlShowOrderUserReport($fecha_desde,$fecha_hasta){
+    static public function mdlShowOrderUserReport($co_ven,$co_user,$fecha_desde,$fecha_hasta){
 
-        $stmt = Conexion::conectar()->query("SELECT *, c.cli_des FROM ordenes o 
+        if($co_ven == 99999){
+            $stmt = Conexion::conectar()->query("SELECT *, c.cli_des FROM ordenes o 
                                                         LEFT JOIN clientes c 
                                                           ON o.co_cli = c.co_cli 
                                                             where o.fecha_creacion between '".$fecha_desde."' and '".$fecha_hasta."' ORDER BY o.doc_num DESC");
+
+        }else{
+
+            $stmt = Conexion::conectar()->query("SELECT *, c.cli_des FROM ordenes o 
+                                                        LEFT JOIN clientes c 
+                                                          ON o.co_cli = c.co_cli 
+                                                            where o.fecha_creacion between '".$fecha_desde."' and '".$fecha_hasta."' AND o.co_user = '".$co_user."' ORDER BY o.doc_num DESC");
+        }
+
 
 
         $stmt -> execute();
