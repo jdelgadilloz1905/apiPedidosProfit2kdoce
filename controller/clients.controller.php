@@ -206,6 +206,7 @@ class ControllerClients{
             "dir_ent2"=>strtoupper($data["direccionEntrega"]),
             "co_ven"=>$data["co_ven"],
             "cond_pag"=>$data["condicion"],
+            "tipo_precio"=>1,
         );
 
 
