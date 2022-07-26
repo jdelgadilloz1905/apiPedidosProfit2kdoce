@@ -146,19 +146,28 @@ class ControllerProducts{
 
     static public function ctrConsultarPrecioXTipoCliente($data){
 
-        $valor = $data["valor"];
+        $valor = $data["valor"]; //codigo del producto
 
-        $valor1 = $data["valor1"];
+        $valor1 = trim($data["valor1"]); //tipo de precio del cliente
 
         $respuesta = ModelProducts::mdlConsultarPrecioXTipoCliente($valor,$valor1);
 
-        echo json_encode(array(
-            "statusCode" => 200,
-            "error" => false,
-            "total" =>count($respuesta),
-            "infoPrecioArticulo" =>$respuesta,
-            "mensaje" =>""
-        ));
+        if(isset($respuesta["id"])){
+
+            $result = array(
+                "status" => 200,
+                "infoPrecioArticulo" =>$respuesta,
+                "mensaje" =>""
+            );
+        }else{
+            $result = array(
+                "status" => 200,
+                "infoPrecioArticulo" =>"",
+                "mensaje" =>$respuesta
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["status"]));
     }
 
 
@@ -256,6 +265,30 @@ class ControllerProducts{
                 "statusCode"=>200,
                 "infoMoneda" =>$respuesta
             ));
+    }
+
+    /*===================================================
+    BUSCAR STOCK DEL PRODUCTO ACTUAL
+    =====================================================*/
+    static public function ctrBuscarStockProducto($data){
+
+        $respuesta = ModelProducts::mdlShowProductsApp($data);
+
+        if(isset($respuesta["id"])){
+            $result =array(
+                "statusCode" => 200,
+                "infoStockArticulo" =>$respuesta,
+                "mensaje" =>""
+            );
+        }else{
+            $result =array(
+                "statusCode" => 402,
+                "infoStockArticulo" =>"",
+                "mensaje" =>"No tiene stock disponible"
+            );
+        }
+        echo json_encode($result,http_response_code($result["statusCode"]));
+
     }
 
 }

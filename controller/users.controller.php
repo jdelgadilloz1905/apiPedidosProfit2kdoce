@@ -9,7 +9,7 @@ class ControllerUsers{
             if($data["modo"] == "directo"){
                 if(preg_match('/^[a-zA-Z0-9.,]+$/', $data["password"])){
 
-                    $encrypt = crypt($data["password"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
+                    $encrypt = crypt(trim($data["password"]), '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
                     $table = "usuarios";
 
@@ -17,7 +17,7 @@ class ControllerUsers{
 
                     $item2 = "usuario";
 
-                    $value = $data["identifier"];
+                    $value = trim($data["identifier"]);
 
                     $answer = ModelUsers::mdlShowUsers($table,$item,$value,$item2);
 

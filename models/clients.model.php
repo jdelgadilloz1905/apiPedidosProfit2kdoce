@@ -252,7 +252,7 @@ class ModelClients{
 
         try {
             $stmt = Conexion::conectar()->prepare("UPDATE $table SET co_cli = :co_cli, co_ven = :co_ven, cli_des = :cli_des, fec_emis = :fec_emis, fec_venc = :fec_venc,
-                                                              saldo = :saldo,tasa = :tasa WHERE doc_num = :doc_num");
+                                                              saldo = :saldo,tasa = :tasa, status = :status WHERE doc_num = :doc_num");
 
             $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
             $stmt -> bindParam(":co_ven", $data["co_ven"], PDO::PARAM_STR);
@@ -262,6 +262,7 @@ class ModelClients{
             $stmt -> bindParam(":fec_venc", $data["fec_venc"], PDO::PARAM_STR);
             $stmt -> bindParam(":saldo", $data["saldo"], PDO::PARAM_STR);
             $stmt -> bindParam(":tasa", $data["tasa"], PDO::PARAM_STR);
+            $stmt -> bindParam(":status", $data["status"], PDO::PARAM_STR);
 
 
             if($stmt -> execute()){
@@ -288,10 +289,10 @@ class ModelClients{
 
             return $response;
 
-        } catch (\Throwable $th) {
+        } catch (PDOException $th) {
             return $response = array(
                 "status"=>500,
-                "result"=>$th,
+                "result"=>$th->getMessage(),
                 "comment" => "Fallo el proceso"
             );
         }
@@ -348,6 +349,48 @@ class ModelClients{
         }
     }
 
+    static public function mdlUpdateSaldoDocumento($table, $data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET saldo = :saldo WHERE nro_doc = :nro_doc and co_tipo_doc = :co_tipo_doc ");
+
+            $stmt -> bindParam(":co_tipo_doc", $data["co_tipo_doc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":nro_doc", $data["nro_doc"], PDO::PARAM_STR);
+            $stmt -> bindParam(":saldo", $data["saldo"], PDO::PARAM_STR);
+            
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$link->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+            );
+        }
+    }
+
     static public function mdlGetClientsLike($tabla,$likess){
 
         $stmt = Conexion::conectar()->query("SELECT  c.co_cli, c.cli_des,c.direc1, c.telefonos, c.rif,c.tip_cli, c.cond_pag, (select cond_des from saCondicionPago where co_cond = c.cond_pag) as cond_des,
@@ -366,7 +409,7 @@ class ModelClients{
 
     static public function mdlGetCuentaXCobrar($tabla,$data){
 
-        $stmt = Conexion::conectar()->prepare("SELECT  * from  $tabla where co_cli = :co_cli ORDER BY co_cli DESC ");
+        $stmt = Conexion::conectar()->prepare("SELECT  * from  $tabla where co_cli = :co_cli and saldo > 0 ORDER BY co_cli DESC ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
 
@@ -436,7 +479,7 @@ class ModelClients{
     static public function mdlObtenerDocumentos($data){
 
 
-        $stmt = Conexion::conectar()->prepare("SELECT * from documentos where co_cli = :co_cli ");
+        $stmt = Conexion::conectar()->prepare("SELECT * from documentos where co_cli = :co_cli and saldo >0 ");
 
         $stmt -> bindParam(":co_cli", $data["co_cli"], PDO::PARAM_STR);
 
@@ -448,6 +491,21 @@ class ModelClients{
 
         $stmt = null;
     }
+
+    static public function mdlObtenerFacturas(){
+
+
+        $stmt = Conexion::conectar()->prepare("SELECT * from facturas where saldo >0 ");
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
 
     static public function mdlListOptionCliente($tabla,$item1,$item2){
 

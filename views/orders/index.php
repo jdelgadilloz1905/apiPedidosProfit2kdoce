@@ -74,6 +74,14 @@ switch ($method){
 
         break;
 
+    case "listareportes":
+
+        $respuesta = ControllerOrders::ctrListaReportes();
+
+        echo $respuesta;
+
+        break;
+
 
     default:
         echo json_encode(

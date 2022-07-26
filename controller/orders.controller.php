@@ -305,10 +305,12 @@ class ControllerOrders{
             );
         }
 
-        echo json_encode($result,http_response_code($result["statusCode"]));
+        echo json_encode($result,http_response_code($result["status"]));
     }
 
     static public function ctrUpdateOrden($data){
+
+        //antes de actualizar debo editar tambien el JSON
 
         $result = ModelsOrders::mdlUpdateOrden($data);
 
@@ -317,48 +319,38 @@ class ControllerOrders{
 
     //REPORTES
 
+    //REPORTES
+
     static public function ctrShowOrderUserReport($obj){
 
-        $fecha_desde = $obj["dateStart"];
-        $fecha_hasta = $obj["dateEnd"];
+        $dateStart = date_create($obj["dateStart"]);
+        $fecha_desde= date_format($dateStart,"Y-m-d");  //Formato en ingles
+        //$fecha_actual= date_format($date,"d-m-Y H:i:s");  //formato en español
 
-        $respuesta = ModelsOrders::mdlShowOrderUserReport($fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
+        $dateEnd = $date = date_create($obj["dateEnd"]);
+        $fecha_hasta = date("Y-m-d",strtotime($obj["dateEnd"]."+ 1 days"));
+
+        $co_ven = ($obj["co_user"] ==1 || $obj["co_user"] == 2 ? 99999 : "");
+
+        $respuesta = ModelsOrders::mdlShowOrderUserReport($co_ven,$obj["co_user"],$fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
 
         if(count($respuesta)>0){
 
-            foreach ($respuesta as $key => $value){
+            $result = array(
+                "status"=>200,
+                "infoOrder" =>$respuesta
+            );
 
-                $resultado[$key] = array(
-                    "_id"=> $key+1,
-                    "doc_num" => $value["doc_num"],
-                    "co_cli" => $value["co_cli"],
-                    "co_user" => $obj["co_user"],
-                    "total_neto" => $value["total_neto"],
-                    "cli_des" => $value["cli_des"],
-                    "direc1" => $value["direc1"],
-                    "rif" => $value["rif"],
-                    "telefonos" => $value["telefonos"],
-                    "fecha_reg" =>$value["fecha_reg"],
-                    "estatus" =>$value["estatus"],
-                    "renglones" =>ModelsOrders::mdlShowOrderReport($value["doc_num"])
-                );
-            }
-
-            echo json_encode(
-                array(
-                    "error" => false,
-                    "statusCode"=>200,
-                    "infoOrder" =>$resultado
-                ));
         }else{
-            echo json_encode(
-                array(
-                    "error" => true,
-                    "statusCode"=>400,
-                    "infoOrder" =>"no tienes pedido"
-                ));
-
+            $result = array(
+                "status"=>400,
+                "infoOrder" =>""
+            );
         }
+
+        echo json_encode($result,http_response_code($result["status"]));
+
+
 
     }
 
@@ -398,6 +390,23 @@ class ControllerOrders{
             )
 
         );
+    }
+
+    static public function ctrListaReportes(){
+
+        $listaReporte = ModelsOrders::mdlListOptionPedido("reportes","url","nombre");
+
+        echo json_encode(
+            array(
+                "error" => false,
+                "statusCode"=>200,
+                "listaReporte" =>$listaReporte,
+
+
+            )
+
+        );
+
     }
 
 }

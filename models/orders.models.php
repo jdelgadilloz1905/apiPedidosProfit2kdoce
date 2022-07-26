@@ -107,17 +107,22 @@ class ModelsOrders{
     }
 
     //ENCABEZADO
-    static public function mdlShowOrderUserReport($fecha_desde,$fecha_hasta){
+    static public function mdlShowOrderUserReport($co_ven,$co_user,$fecha_desde,$fecha_hasta){
 
-        $stmt = Conexion::conectar()->query("SELECT p.doc_num,p.co_cli,p.total_neto, p.dir_ent direc1, 
-                                                        (CASE WHEN p.status=0 THEN 'Sin procesar' ELSE 
-                                                        CASE WHEN p.status=1 THEN 'Parc procesado' ELSE
-                                                        CASE WHEN p.status=2 THEN 'Procesado' END END END) AS estatus, 
-                                                        p.fec_emis fecha_reg,c.cli_des, c.rif, c.telefonos
-                                                            FROM saPedidoVenta p 
-                                                            LEFT JOIN saCliente c
-                                                            ON p.co_cli = c.co_cli
-                                                            WHERE p.fec_emis BETWEEN DATEADD(DAY,-1,'".$fecha_desde."') AND DATEADD(DAY,1,'".$fecha_hasta."') ORDER BY p.doc_num DESC");
+        if($co_ven == 99999){
+            $stmt = Conexion::conectar()->query("SELECT o.*, c.cli_des FROM ordenes o 
+                                                        LEFT JOIN clientes c 
+                                                          ON o.co_cli = c.co_cli 
+                                                            where o.fecha_creacion between '".$fecha_desde."' and '".$fecha_hasta."' ORDER BY o.doc_num DESC");
+
+        }else{
+
+            $stmt = Conexion::conectar()->query("SELECT o.*, c.cli_des FROM ordenes o 
+                                                        LEFT JOIN clientes c 
+                                                          ON o.co_cli = c.co_cli 
+                                                            where o.fecha_creacion between '".$fecha_desde."' and '".$fecha_hasta."' AND o.co_user = '".$co_user."' ORDER BY o.doc_num DESC");
+        }
+
 
 
         $stmt -> execute();
@@ -400,28 +405,33 @@ class ModelsOrders{
 
     static public function mdlUpdateOrden($data){
 
-        $stmt = Conexion::conectar()->prepare("UPDATE ordenes SET doc_num = :doc_num, estatus_sin = :estatus_sin, comentario = :comentario WHERE id_pedido = :id_pedido");
+        try{
 
-        $stmt -> bindParam(":doc_num", $data["doc_num"], PDO::PARAM_STR);
-        $stmt -> bindParam(":id_pedido", $data["id_pedido"], PDO::PARAM_STR);
-        $stmt -> bindParam(":estatus_sin", $data["estatus_sin"], PDO::PARAM_STR);
-        $stmt -> bindParam(":comentario", $data["comentario"], PDO::PARAM_STR);
+            $stmt = Conexion::conectar()->prepare("UPDATE ordenes SET doc_num = :doc_num, estatus_sin = :estatus_sin, comentario = :comentario, renglones = :renglones WHERE id_pedido = :id_pedido");
 
+            $stmt -> bindParam(":doc_num", $data["doc_num"], PDO::PARAM_STR);
+            $stmt -> bindParam(":id_pedido", $data["id_pedido"], PDO::PARAM_STR);
+            $stmt -> bindParam(":estatus_sin", $data["estatus_sin"], PDO::PARAM_STR);
+            $stmt -> bindParam(":comentario", $data["comentario"], PDO::PARAM_STR);
+            $stmt -> bindParam(":renglones", $data["renglones"], PDO::PARAM_STR);
 
+            if($stmt -> execute()){
 
-        if($stmt -> execute()){
+                return "ok";
 
-            return "ok";
+            }else{
 
-        }else{
+                return "error";
 
-            return "error";
+            }
 
+            $stmt -> close();
+
+            $stmt = null;
+        }catch (PDOException $pe){
+            return "Error occurred:" . $pe->getMessage();
         }
 
-        $stmt -> close();
-
-        $stmt = null;
 
     }
 

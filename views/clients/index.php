@@ -57,7 +57,7 @@ switch ($method){
         $respuesta = ControllerClients::ctrRegistrarCliente($obj);
 
         echo $respuesta;
-
+        
         break;
 
     case "clientregisterapp":
@@ -131,8 +131,37 @@ switch ($method){
         echo $respuesta;
 
         break;
+        
+    case "obtenerfacturas":
+        
+        $respuesta = ControllerClients::ctrObtenerFacturas();
+        
+        echo $respuesta;
+        break;
 
+    case "buscarcliente":
 
+        $respuesta = ControllerClients::ctrBuscarCliente($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "uploadimage":
+
+        $respuesta = ControllerClients::ctrCargaImagen($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "registerimage":
+
+        $respuesta = ControllerClients::ctrRegistrarImagenesCliente($obj);
+
+        echo $respuesta;
+
+        break;
 
     default:
         echo json_encode(
@@ -140,7 +169,8 @@ switch ($method){
                 "error" => true,
                 "statusCode"=>400,
                 "metodo" =>$method,
-                "variable" =>$obj
+                "variable" =>$_FILES,
+                "variable_POST" =>$_POST
             ));
             break;
 }

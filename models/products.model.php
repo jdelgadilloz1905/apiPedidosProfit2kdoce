@@ -42,11 +42,11 @@ class ModelProducts{
 
         if($item != null){
 
-            $stmt = Conexion::conectar()->query("SELECT * FROM precios_productos WHERE $item = '$valor'");
+            $stmt = Conexion::conectar()->query("SELECT * FROM precios_productos WHERE inactivo = 0 AND $item = '$valor'");
             $stmt -> execute();
             return $stmt -> fetchAll(PDO::FETCH_ASSOC);
         }else{
-            $stmt = Conexion::conectar()->query("SELECT * FROM precios_productos ORDER BY co_art, co_precio ASC ");
+            $stmt = Conexion::conectar()->query("SELECT * FROM precios_productos where inactivo = 0 ORDER BY co_art, co_precio ASC ");
             $stmt -> execute();
             return $stmt -> fetchAll(PDO::FETCH_ASSOC);
         }
@@ -60,16 +60,24 @@ class ModelProducts{
 
     static public function mdlConsultarPrecioXTipoCliente($valor,$valor1){
 
-        $stmt = Conexion::conectar()->query("SELECT * FROM precios_productos
+        try{
+
+            $stmt = Conexion::conectar()->query("SELECT * FROM precios_productos
                                                 WHERE co_art = '$valor'
                                                 AND co_precio = '$valor1'
                                                 AND inactivo = 0 ");
 
+            $stmt -> execute();
+
+            return $stmt -> fetch(PDO::FETCH_ASSOC);
+
+        }catch (PDOException $pe) {
+
+            return "Error occurred:" . $pe->getMessage();
+
+        }
 
 
-        $stmt -> execute();
-
-        return $stmt -> fetch(PDO::FETCH_ASSOC);
     }
     /*=============================================
     STOCK DE LOS PRODUCTOS
@@ -439,7 +447,7 @@ class ModelProducts{
     /*CONSULTAS DEL SERVIDOR DE PROFIT  */
 
     /*=============================================
-    REGISTRAR DATOS  
+    REGISTRAR DATOS
     =============================================*/
     static public function mdlRegisterFile($table, $data){
 
@@ -464,7 +472,7 @@ class ModelProducts{
                 $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
             }
 
-            if($stmt->execute()){        
+            if($stmt->execute()){
 
                 $response = array(
                     "status"=>200,
@@ -483,12 +491,12 @@ class ModelProducts{
 
         } catch (\Throwable $th) {
             return $response = array(
-                    "status"=>500,
-                    "result"=>$th,
-                    "comment" => "Fallo el proceso"
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
             );
         }
-                   
+
     }
 
     static public function mdlUpdateProducto($table,$data){
@@ -506,7 +514,7 @@ class ModelProducts{
             $stmt -> bindParam(":des_ubicacion", $data["des_ubicacion"], PDO::PARAM_STR);
             $stmt -> bindParam(":des_proc", $data["des_proc"], PDO::PARAM_STR);
             $stmt -> bindParam(":stock_actual", $data["stock_actual"], PDO::PARAM_STR);
-            
+
             if($stmt -> execute()){
 
                 $response = array(

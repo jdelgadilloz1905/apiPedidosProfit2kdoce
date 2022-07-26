@@ -87,6 +87,14 @@ switch ($method){
 
         break;
 
+    case "buscarstockactual":
+
+        $respuesta = ControllerProducts::ctrBuscarStockProducto($obj);
+
+        echo $respuesta;
+
+        break;
+
 
     default:
         echo json_encode(
