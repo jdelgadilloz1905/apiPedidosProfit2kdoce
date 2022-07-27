@@ -89,6 +89,8 @@ class ModelClients{
                 $response = array(
                     "status"=>200,
                     "result"=>$link->lastInsertId(),
+                    "image"=>$data["imagen"],
+                    "uri"=>$data["uri"],
                     "comment" => "Registro creado exitosamente"
                 );
             }else{
@@ -96,6 +98,8 @@ class ModelClients{
                 $response = array(
                     "status"=>400,
                     "result"=>$link->errorInfo(),
+                    "image"=>"",
+                    "uri"=>"",
                     "comment" => "Fallo el registro"
                 );
             }
@@ -105,6 +109,8 @@ class ModelClients{
             return $response = array(
                     "status"=>500,
                     "result"=>$th->getMessage(),
+                    "image"=>"",
+                    "uri"=>"",
                     "comment" => "Fallo el proceso"
             );
         }
@@ -165,44 +171,44 @@ class ModelClients{
 
     static public function mdlUpdateTransporte($table,$data){
 
-        try {
-            $stmt = Conexion::conectar()->prepare("UPDATE $table SET des_tran = :des_tran WHERE co_tran = :co_tran");
+            try {
+                $stmt = Conexion::conectar()->prepare("UPDATE $table SET des_tran = :des_tran WHERE co_tran = :co_tran");
 
-            $stmt -> bindParam(":co_tran", $data["co_tran"], PDO::PARAM_STR);
-            $stmt -> bindParam(":des_tran", $data["des_tran"], PDO::PARAM_STR);
+                $stmt -> bindParam(":co_tran", $data["co_tran"], PDO::PARAM_STR);
+                $stmt -> bindParam(":des_tran", $data["des_tran"], PDO::PARAM_STR);
 
 
-            if($stmt -> execute()){
+                if($stmt -> execute()){
 
-                $response = array(
-                    "status"=>200,
-                    "result"=>"ok",
-                    "comment" => "El proceso fue exitoso"
-                );
+                    $response = array(
+                        "status"=>200,
+                        "result"=>"ok",
+                        "comment" => "El proceso fue exitoso"
+                    );
 
-            }else{
+                }else{
 
-                $response = array(
-                    "status"=>404,
-                    "result"=>$link->errorInfo(),
+                    $response = array(
+                        "status"=>404,
+                        "result"=>$stmt->errorInfo(),
+                        "comment" => "Fallo el proceso"
+                    );
+
+                }
+
+                //$stmt -> close();
+
+                $stmt = null;
+
+                return $response;
+
+            } catch (PDOException $th) {
+                return $response = array(
+                    "status"=>500,
+                    "result"=>$th->getMessage(),
                     "comment" => "Fallo el proceso"
                 );
-
             }
-
-            //$stmt -> close();
-
-            $stmt = null;
-
-            return $response;
-
-        } catch (\Throwable $th) {
-            return $response = array(
-                "status"=>500,
-                "result"=>$th,
-                "comment" => "Fallo el proceso"
-        );
-        }
     }
 
     static public function mdlUpdateCondicio($table,$data){
@@ -227,7 +233,7 @@ class ModelClients{
 
                 $response = array(
                     "status"=>404,
-                    "result"=>$link->errorInfo(),
+                    "result"=>$stmt->errorInfo(),
                     "comment" => "Fallo el proceso"
                 );
 
@@ -239,10 +245,10 @@ class ModelClients{
 
             return $response;
 
-        } catch (\Throwable $th) {
+        } catch (PDOException $th) {
             return $response = array(
                 "status"=>500,
-                "result"=>$th,
+                "result"=>$th->getMessage(),
                 "comment" => "Fallo el proceso"
             );
         }
@@ -569,6 +575,61 @@ class ModelClients{
 
         $stmt = null;
 
+    }
+
+    static public function mdlShowImageApp($valor)
+    {
+        $stmt = Conexion::conectar()->prepare(" SELECT * from imagenes where co_cli = :co_cli  and eliminado = 0 order by id desc LIMIT 3");
+
+        $stmt -> bindParam(":co_cli", $valor, PDO::PARAM_STR);
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
+    static public function mdlDeleteImagen($data){
+
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE imagenes SET eliminado = 1 WHERE imagen = :imagen");
+
+            $stmt -> bindParam(":imagen", $data["imagen"], PDO::PARAM_STR);
+
+            if($stmt -> execute()){
+
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
+
+            }else{
+
+                $response = array(
+                    "status"=>404,
+                    "result"=>$stmt->errorInfo(),
+                    "comment" => "Fallo el proceso"
+                );
+
+            }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (PDOException $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th->getMessage(),
+                "comment" => "Fallo el proceso"
+            );
+        }
     }
 
 

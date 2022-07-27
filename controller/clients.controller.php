@@ -227,9 +227,6 @@ class ControllerClients{
 
     static public function ctrRegistrarCliente($data){
 
-        //$proximoNumero = ModelClients::mdlProximoNumero(); //ya no va se va tomar el codigo del rif del mismo cliente
-
-
 
         $datos = array(
             "co_cli"=>"",
@@ -278,9 +275,12 @@ class ControllerClients{
         $resultado = ModelClients::mdlRegisterFile("imagenes",$datos);
 
         echo json_encode($resultado,http_response_code($resultado["status"]));
+        //echo json_encode($datos,http_response_code(200));
     }
 
     static public function ctrCargaImagen(){
+
+        $url = Ruta::ctrRutaFront();
 
         $FileUploader = new FileUploader('imagen',array(
 
@@ -311,12 +311,18 @@ class ControllerClients{
         $fileList = $FileUploader->getFileList();
 
         //debe haber un return para mandar el json donde lo pidan
-        return json_encode(array(
-            "status" => 200,
-            "imageInfo"=> $fileList,
-            //"co_cli"=>$_POST["id"]
+        $datos = array(
+            "co_cli"=>$_POST["co_cli"],
+            "imagen"=>$url.$fileList[0]["file"],
+            "uri"=>$fileList[0]["file"],
+            "comentario"=>"",
 
-        ),200);
+        );
+
+        $resultado = ModelClients::mdlRegisterFile("imagenes",$datos);
+
+        echo json_encode($resultado,http_response_code($resultado["status"]));
+
     }
 
 
@@ -440,6 +446,52 @@ class ControllerClients{
     static public function ctrUpdateClient($data){
 
         $result = ModelClients::mdlUpdateClient($data);
+
+        echo json_encode($result,http_response_code($result["status"]));
+    }
+
+    static public function ctrBuscarImagenesCliente($data){
+
+        $respuesta = ModelClients::mdlShowImageApp($data["co_cli"]);
+
+        if($respuesta){
+
+            $result = array(
+                "statusCode"=>200,
+                "infoImagenes" =>$respuesta,
+                "infoUrl"=> self::ctrPrepararJsonImage($respuesta),
+            );
+
+        }else{
+            $result = array(
+                "statusCode"=>400,
+                "infoImagenes" =>"",
+                "infoUrl"=>""
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["statusCode"]));
+    }
+
+    static public function ctrPrepararJsonImage($data){
+
+        foreach ($data as $key1 => $image){
+
+
+            $result[$key1] = array(
+
+                "uri" =>$image["imagen"]
+            );
+
+
+        }
+
+        return $result;
+    }
+
+    static public function ctrDeleteImagen($data){
+
+        $result = ModelClients::mdlDeleteImagen($data);
 
         echo json_encode($result,http_response_code($result["status"]));
     }

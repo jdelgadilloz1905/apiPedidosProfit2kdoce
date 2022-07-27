@@ -163,11 +163,29 @@ switch ($method){
 
         break;
 
+    case "buscarimagenes":
+
+        $respuesta = ControllerClients::ctrBuscarImagenesCliente($obj);
+
+        echo $respuesta;
+
+        break;
+
+    case "deleteimagen":
+
+        $respuesta = ControllerClients::ctrDeleteImagen($obj);
+
+        echo $respuesta;
+
+        break;
+
+
+
     default:
         echo json_encode(
             array(
                 "error" => true,
-                "statusCode"=>400,
+                "status"=>200,
                 "metodo" =>$method,
                 "variable" =>$_FILES,
                 "variable_POST" =>$_POST
