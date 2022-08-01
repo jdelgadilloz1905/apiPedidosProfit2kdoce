@@ -330,7 +330,8 @@ class ControllerOrders{
         $dateEnd = $date = date_create($obj["dateEnd"]);
         $fecha_hasta = date("Y-m-d",strtotime($obj["dateEnd"]."+ 1 days"));
 
-        $co_ven = ($obj["co_user"] ==1 || $obj["co_user"] == 2 ? 99999 : "");
+        //se parametriza los usuarios que van a ver todos los registros
+        $co_ven = ($obj["co_user"] ==1 || $obj["co_user"] == 2 || $obj["co_user"] == 12 ? 99999 : "");
 
         $respuesta = ModelsOrders::mdlShowOrderUserReport($co_ven,$obj["co_user"],$fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
 
@@ -338,13 +339,17 @@ class ControllerOrders{
 
             $result = array(
                 "status"=>200,
-                "infoOrder" =>$respuesta
+                "totales" => self::sumarTotales($respuesta,"total_neto"),
+                "infoOrder" =>$respuesta,
+
+
             );
 
         }else{
             $result = array(
                 "status"=>400,
-                "infoOrder" =>""
+                "infoOrder" =>"",
+                "totales" =>0
             );
         }
 
@@ -352,6 +357,57 @@ class ControllerOrders{
 
 
 
+    }
+
+    static public function ctrShowOrderUserReportVendedor($obj){
+
+        $dateStart = date_create($obj["dateStart"]);
+        $fecha_desde= date_format($dateStart,"Y-m-d");  //Formato en ingles
+        //$fecha_actual= date_format($date,"d-m-Y H:i:s");  //formato en español
+
+        $dateEnd = $date = date_create($obj["dateEnd"]);
+        $fecha_hasta = date("Y-m-d",strtotime($obj["dateEnd"]."+ 1 days"));
+
+        //se parametriza los usuarios que van a ver todos los registros
+        //$co_ven = ($obj["co_user"] ==1 || $obj["co_user"] == 2 || $obj["co_user"] == 12 ? 99999 : "");
+
+        $respuesta = ModelsOrders::mdlShowOrderUserReportVendedor($obj["co_ven"],$obj["co_user"],$fecha_desde,$fecha_hasta); //BUSCO TODOS LOS CLIENTES
+
+        if(count($respuesta)>0){
+
+            $result = array(
+                "status"=>200,
+                "totales" => self::sumarTotales($respuesta,"total_neto"),
+                "vendedor"=>$respuesta[0]["ven_des"],
+                "infoOrder" =>$respuesta,
+
+
+            );
+
+        }else{
+            $result = array(
+                "status"=>400,
+                "infoOrder" =>"",
+                "vendedor"=>"",
+                "totales" =>0
+            );
+        }
+
+        echo json_encode($result,http_response_code($result["status"]));
+
+
+
+    }
+
+    static public function sumarTotales($resultado, $item){
+
+        $total = 0;
+        foreach ($resultado as $key => $value) {
+
+            $total += $value[$item];
+        }
+
+        return $total;
     }
 
 
@@ -408,5 +464,7 @@ class ControllerOrders{
         );
 
     }
+
+
 
 }

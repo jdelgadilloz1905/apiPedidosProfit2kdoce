@@ -134,6 +134,28 @@ class ModelsOrders{
         $stmt = null;
     }
 
+    static public function mdlShowOrderUserReportVendedor($co_ven,$co_user,$fecha_desde,$fecha_hasta){
+
+
+       $stmt = Conexion::conectar()->query("SELECT o.*, c.cli_des, v.ven_des FROM ordenes o 
+                                                        LEFT JOIN clientes c 
+                                                          ON o.co_cli = c.co_cli 
+                                                        LEFT JOIN vendedores v  
+                                                          ON v.co_ven = o.co_ven
+                                                            where o.fecha_creacion between '".$fecha_desde."' and '".$fecha_hasta."' AND o.co_ven = '".rtrim(ltrim($co_ven))."' ORDER BY o.doc_num DESC");
+
+
+
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt -> close();
+
+        $stmt = null;
+    }
+
     //DETALLE
     static public function mdlShowOrderReport($valor){
 

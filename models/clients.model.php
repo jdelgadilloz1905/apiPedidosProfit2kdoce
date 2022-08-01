@@ -25,7 +25,7 @@ class ModelClients{
         $stmt -> close();
         $stmt = null;
     }
-    
+
     static public function mdlShowFileApp($table, $item, $valor)
     {
         $stmt = Conexion::conectar()->prepare(" SELECT * from $table where $item = :$item");
@@ -84,7 +84,7 @@ class ModelClients{
                 $stmt->bindParam(":".$key, $data[$key], PDO::PARAM_STR);
             }
 
-            if($stmt->execute()){        
+            if($stmt->execute()){
 
                 $response = array(
                     "status"=>200,
@@ -107,14 +107,14 @@ class ModelClients{
 
         } catch (PDOException $th) {
             return $response = array(
-                    "status"=>500,
-                    "result"=>$th->getMessage(),
-                    "image"=>"",
-                    "uri"=>"",
-                    "comment" => "Fallo el proceso"
+                "status"=>500,
+                "result"=>$th->getMessage(),
+                "image"=>"",
+                "uri"=>"",
+                "comment" => "Fallo el proceso"
             );
         }
-                   
+
     }
 
     static public function mdlUpdateCliente($table,$data){
@@ -134,7 +134,7 @@ class ModelClients{
             $stmt -> bindParam(":cond_pag", $data["cond_pag"], PDO::PARAM_STR);
             $stmt -> bindParam(":cond_des", $data["cond_des"], PDO::PARAM_STR);
             $stmt -> bindParam(":tipo_precio", $data["tipo_precio"], PDO::PARAM_STR);
-            
+
             if($stmt -> execute()){
 
                 $response = array(
@@ -171,44 +171,44 @@ class ModelClients{
 
     static public function mdlUpdateTransporte($table,$data){
 
-            try {
-                $stmt = Conexion::conectar()->prepare("UPDATE $table SET des_tran = :des_tran WHERE co_tran = :co_tran");
+        try {
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET des_tran = :des_tran WHERE co_tran = :co_tran");
 
-                $stmt -> bindParam(":co_tran", $data["co_tran"], PDO::PARAM_STR);
-                $stmt -> bindParam(":des_tran", $data["des_tran"], PDO::PARAM_STR);
+            $stmt -> bindParam(":co_tran", $data["co_tran"], PDO::PARAM_STR);
+            $stmt -> bindParam(":des_tran", $data["des_tran"], PDO::PARAM_STR);
 
 
-                if($stmt -> execute()){
+            if($stmt -> execute()){
 
-                    $response = array(
-                        "status"=>200,
-                        "result"=>"ok",
-                        "comment" => "El proceso fue exitoso"
-                    );
+                $response = array(
+                    "status"=>200,
+                    "result"=>"ok",
+                    "comment" => "El proceso fue exitoso"
+                );
 
-                }else{
+            }else{
 
-                    $response = array(
-                        "status"=>404,
-                        "result"=>$stmt->errorInfo(),
-                        "comment" => "Fallo el proceso"
-                    );
-
-                }
-
-                //$stmt -> close();
-
-                $stmt = null;
-
-                return $response;
-
-            } catch (PDOException $th) {
-                return $response = array(
-                    "status"=>500,
-                    "result"=>$th->getMessage(),
+                $response = array(
+                    "status"=>404,
+                    "result"=>$stmt->errorInfo(),
                     "comment" => "Fallo el proceso"
                 );
+
             }
+
+            //$stmt -> close();
+
+            $stmt = null;
+
+            return $response;
+
+        } catch (PDOException $th) {
+            return $response = array(
+                "status"=>500,
+                "result"=>$th->getMessage(),
+                "comment" => "Fallo el proceso"
+            );
+        }
     }
 
     static public function mdlUpdateCondicio($table,$data){
@@ -363,7 +363,7 @@ class ModelClients{
             $stmt -> bindParam(":co_tipo_doc", $data["co_tipo_doc"], PDO::PARAM_STR);
             $stmt -> bindParam(":nro_doc", $data["nro_doc"], PDO::PARAM_STR);
             $stmt -> bindParam(":saldo", $data["saldo"], PDO::PARAM_STR);
-            
+
             if($stmt -> execute()){
 
                 $response = array(

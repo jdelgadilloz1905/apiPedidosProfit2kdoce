@@ -258,6 +258,36 @@ class ModelUsers{
         
     }
 
+    static public function mdlShowVendedorAll($tabla){
+
+        try {
+
+            $stmt = Conexion::conectar()->prepare("SELECT co_ven as value,ven_des as label FROM $tabla where co_ven in(select co_ven from  usuarios)");
+
+            $stmt -> execute();
+
+            return $response = array(
+                "status"=>200,
+                "result"=>$stmt -> fetchAll(PDO::FETCH_ASSOC),
+                "comment" => ""
+            );
+
+            $stmt -> close();
+
+            $stmt = null;
+
+        } catch (\Throwable $th) {
+
+            return $response = array(
+                "status"=>500,
+                "result"=>$th,
+                "comment" => "Fallo el proceso"
+            );
+        }
+
+
+    }
+
     /*=============================================
     MOSTRAR REGISTROS 
     =============================================*/

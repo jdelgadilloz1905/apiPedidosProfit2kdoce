@@ -72,6 +72,15 @@ switch ($method){
 
         break;
 
+
+    case "vendedoresall":
+
+        $respuesta = ControllerUsers::ctrShowVendedorAll();
+
+        echo $respuesta;
+
+        break;
+
     case "registervendedor":     
 
         $respuesta = ControllerUsers::ctrRegisterVendedor($obj);

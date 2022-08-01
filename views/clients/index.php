@@ -57,16 +57,16 @@ switch ($method){
         $respuesta = ControllerClients::ctrRegistrarCliente($obj);
 
         echo $respuesta;
-        
+
         break;
 
     case "clientregisterapp":
 
-            $respuesta = ControllerClients::ctrRegistrarClienteApp($obj);
-    
-            echo $respuesta;
-    
-            break;
+        $respuesta = ControllerClients::ctrRegistrarClienteApp($obj);
+
+        echo $respuesta;
+
+        break;
 
     case "registrarclienteprofit":
 
@@ -131,11 +131,11 @@ switch ($method){
         echo $respuesta;
 
         break;
-        
+
     case "obtenerfacturas":
-        
+
         $respuesta = ControllerClients::ctrObtenerFacturas();
-        
+
         echo $respuesta;
         break;
 
@@ -188,8 +188,9 @@ switch ($method){
                 "status"=>200,
                 "metodo" =>$method,
                 "variable" =>$_FILES,
-                "variable_POST" =>$_POST
+                "variable_POST" =>$_POST,
+                "variable" =>$obj
             ));
-            break;
+        break;
 }
 

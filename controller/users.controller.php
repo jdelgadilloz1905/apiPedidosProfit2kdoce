@@ -524,6 +524,13 @@ class ControllerUsers{
         echo json_encode($respuesta,http_response_code($respuesta["status"]));
     }
 
+    static public function ctrShowVendedorAll(){
+
+        $respuesta = ModelUsers::mdlShowVendedorAll("vendedores");
+
+        echo json_encode($respuesta,http_response_code($respuesta["status"]));
+    }
+
     static public function ctrRegisterVendedor($data){
         
         $respuesta = ModelUsers::mdlShowRegister("vendedores", "co_ven", $data["co_ven"]);

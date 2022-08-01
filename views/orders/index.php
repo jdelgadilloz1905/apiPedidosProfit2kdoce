@@ -35,6 +35,14 @@ switch ($method){
 
         break;
 
+    case "reportordervendedor":
+
+        $respuesta = ControllerOrders::ctrShowOrderUserReportVendedor($obj);
+
+        echo $respuesta;
+
+        break;
+
     case "datospedido":
 
         $respuesta = ControllerOrders::ctrListOptionPedido();

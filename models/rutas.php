@@ -15,7 +15,8 @@ class Ruta{
     static public function ctrRutaFront(){
 
 
-        return "http://192.168.0.111:8080/apiPedidosProfit2kdoceAquila/";
+        //return "http://appsjd.ddns.net:8080/apiPedidosProfit2kdoceAquila/";
+        return "http://appsjd.ddns.net:8080/apiPedidosProfit2kdoceAquila/";
 
     }
 
